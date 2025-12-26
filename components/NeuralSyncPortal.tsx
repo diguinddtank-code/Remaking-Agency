@@ -10,6 +10,9 @@ import { Fingerprint, Lock, Unlock, Zap, CheckCircle2, ChevronRight } from 'luci
 
 const NeuralSyncPortal: React.FC = () => {
   const [status, setStatus] = useState<'idle' | 'scanning' | 'complete'>('idle');
+  // Ref to track status synchronously across event closures/renders
+  const statusRef = useRef<'idle' | 'scanning' | 'complete'>('idle');
+
   const [progress, setProgress] = useState(0);
   const progressValue = useMotionValue(0);
   const controls = useAnimation();
@@ -27,14 +30,23 @@ const NeuralSyncPortal: React.FC = () => {
     status: "Market Leader"
   };
 
+  // Helper to update state and ref simultaneously
+  const updateStatus = (newStatus: 'idle' | 'scanning' | 'complete') => {
+    setStatus(newStatus);
+    statusRef.current = newStatus;
+  };
+
   const startScan = () => {
-    if (status === 'complete') return;
-    setStatus('scanning');
+    if (statusRef.current === 'complete') return;
+    updateStatus('scanning');
     
     let start: number;
     const duration = 2000; // 2 seconds to unlock
 
     const step = (timestamp: number) => {
+      // If status changed to idle (user released early), stop loop
+      if (statusRef.current === 'idle') return;
+
       if (!start) start = timestamp;
       const elapsed = timestamp - start;
       const p = Math.min((elapsed / duration) * 100, 100);
@@ -53,17 +65,20 @@ const NeuralSyncPortal: React.FC = () => {
   };
 
   const stopScan = () => {
-    if (status === 'complete') return;
+    // Crucial fix: Check ref instead of state to avoid stale closure issues
+    // If complete, do NOT reset to idle when user lifts finger
+    if (statusRef.current === 'complete') return;
+    
     if (requestRef.current) cancelAnimationFrame(requestRef.current);
     
-    setStatus('idle');
+    updateStatus('idle');
     // Spring back animation
     animate(progressValue, 0, { duration: 0.5 });
     setProgress(0);
   };
 
   const completeScan = () => {
-    setStatus('complete');
+    updateStatus('complete');
     // Haptic feedback pattern (simulated visual shake)
     controls.start({
       x: [0, -5, 5, -5, 5, 0],
@@ -112,10 +127,10 @@ const NeuralSyncPortal: React.FC = () => {
           {/* Success State (Result Card) */}
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
-            animate={status === 'complete' ? { scale: 1, opacity: 1 } : { scale: 0.8, opacity: 0 }}
-            className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none"
+            animate={status === 'complete' ? { scale: 1, opacity: 1, pointerEvents: 'auto' } : { scale: 0.8, opacity: 0, pointerEvents: 'none' }}
+            className="absolute inset-0 z-20 flex items-center justify-center"
           >
-            <div className="w-full bg-[#0a0a0a]/90 backdrop-blur-xl border border-[#a8fbd3] rounded-2xl p-6 shadow-[0_0_50px_rgba(168,251,211,0.2)] pointer-events-auto">
+            <div className="w-full bg-[#0a0a0a]/90 backdrop-blur-xl border border-[#a8fbd3] rounded-2xl p-6 shadow-[0_0_50px_rgba(168,251,211,0.2)]">
                <div className="flex justify-center mb-4">
                  <div className="p-3 bg-[#a8fbd3] rounded-full text-black">
                    <Unlock size={24} />
@@ -151,16 +166,17 @@ const NeuralSyncPortal: React.FC = () => {
 
           {/* Scanner Button (Active State) */}
           <motion.button
-             className="relative z-10 w-full h-full rounded-full flex items-center justify-center outline-none group"
+             className="relative z-10 w-full h-full rounded-full flex items-center justify-center outline-none group touch-none select-none"
              animate={controls}
              onMouseDown={startScan}
              onMouseUp={stopScan}
              onMouseLeave={stopScan}
-             onTouchStart={startScan}
+             onTouchStart={(e) => { e.preventDefault(); startScan(); }}
              onTouchEnd={stopScan}
+             onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); }}
              style={{ 
+               opacity: status === 'complete' ? 0 : 1,
                pointerEvents: status === 'complete' ? 'none' : 'auto',
-               opacity: status === 'complete' ? 0 : 1
              }}
           >
              {/* Progress Ring */}

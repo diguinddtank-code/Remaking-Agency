@@ -5,7 +5,7 @@
 */
 
 import React, { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, MotionValue } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 
 interface Project {
@@ -19,15 +19,6 @@ interface Project {
 }
 
 const PROJECTS: Project[] = [
-  {
-    id: 'remaking',
-    name: 'REMAKING AGENCY',
-    category: 'AGENCY PORTFOLIO',
-    year: '2025',
-    url: 'https://remaking.vercel.app/',
-    desktopImg: 'https://i.imgur.com/DBgr0yr.png',
-    mobileImg: 'https://i.imgur.com/vz5DC0h.png'
-  },
   {
     id: 'bilu',
     name: 'BILU ECOSYSTEM',
@@ -70,81 +61,97 @@ interface CardProps {
   project: Project;
   index: number;
   total: number;
+  range: [number, number];
+  targetScale: number;
+  progress: MotionValue<number>;
 }
 
-const Card: React.FC<CardProps> = ({ project, index, total }) => {
-  // Calculate dynamic top offset for the stacking effect
-  // Mobile: start at 80px, step 15px
-  // Desktop: start at 100px, step 30px
-  const topOffsetDesktop = 100 + (index * 30);
-  const topOffsetMobile = 80 + (index * 15);
-
+const Card: React.FC<CardProps> = ({ project, index, total, progress, range, targetScale }) => {
+  
+  // Create a scale effect based on the scroll progress of the container
+  // As the card moves up the stack (gets covered), it scales down slightly to create depth
+  const scale = useTransform(progress, range, [1, targetScale]);
+  
   return (
     <div 
-      className="sticky w-full"
+      className="sticky h-screen flex items-center justify-center"
       style={{ 
-        // We use CSS variables or simple calc for responsiveness inside the style tag logic 
-        // to avoid complex JS window resizing listeners. 
-        top: `calc(10vh + ${index * 25}px)` 
+        // This ensures they stick at the top but with a tiny offset so we see the "stack" edge
+        top: `calc(10% + ${index * 15}px)`,
+        marginBottom: index === total - 1 ? 0 : '-20vh' // Pulls the next card up sooner
       }}
     >
       {/* CARD CONTAINER */}
       <motion.div 
-        className="relative flex flex-col md:flex-row bg-[#080808] border-t border-white/15 overflow-hidden w-full max-w-[1600px] mx-auto min-h-[500px] md:h-[650px] rounded-t-[2rem] shadow-[-10px_-10px_30px_rgba(0,0,0,0.5)] origin-top"
-        initial={{ y: 50, opacity: 0 }}
+        className="relative flex flex-col md:flex-row bg-[#111] border border-white/10 overflow-hidden w-full max-w-[1400px] mx-auto h-[60vh] md:h-[600px] rounded-[2rem] shadow-[0_-50px_100px_rgba(0,0,0,0.7)] origin-top"
+        style={{ 
+            scale,
+            // Dynamic Z-index to ensure correct layering
+            zIndex: index 
+        }}
+        initial={{ y: 100, opacity: 0 }}
         whileInView={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         viewport={{ once: true, margin: "-10%" }}
       >
         
         {/* LEFT COLUMN (TEXT) */}
-        <div className="w-full md:w-[45%] p-8 md:p-16 flex flex-col justify-between relative z-10">
-          <div>
-            <div className="flex items-center gap-4 mb-6 md:mb-12">
+        <div className="w-full md:w-[45%] p-8 md:p-12 flex flex-col justify-between relative z-10 bg-[#111]">
+          <div className="flex flex-col h-full justify-between">
+            <div className="flex items-center gap-4 mb-6">
               <span className="text-[#a8fbd3] font-mono text-xs tracking-[0.2em]">0{index + 1}</span>
               <span className="h-px w-12 bg-white/20"></span>
-              <span className="text-white/50 font-mono text-xs tracking-[0.2em]">{project.year}</span>
             </div>
 
-            <h3 className="text-[12vw] md:text-6xl lg:text-7xl font-heading font-bold uppercase leading-[0.85] text-white tracking-tighter mb-4">
-              {project.name}
-            </h3>
-            <p className="text-[#a8fbd3] font-mono text-[10px] md:text-xs tracking-[0.3em] uppercase">
-              {project.category}
-            </p>
-          </div>
+            <div>
+                <motion.h3 
+                    className="text-[10vw] md:text-5xl lg:text-6xl font-heading font-bold uppercase leading-[0.9] text-white tracking-tighter mb-4"
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 }}
+                >
+                {project.name}
+                </motion.h3>
+                <motion.p 
+                    className="text-purple-400 font-mono text-[10px] md:text-xs tracking-[0.3em] uppercase"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                >
+                {project.category}
+                </motion.p>
+            </div>
 
-          <div className="mt-12 md:mt-0">
-             <a 
-               href={project.url} 
-               target="_blank" 
-               rel="noopener noreferrer"
-               className="group inline-flex items-center gap-4 text-white hover:text-[#a8fbd3] transition-colors"
-             >
-                <div className="w-12 h-12 md:w-16 md:h-16 rounded-full border border-white/20 flex items-center justify-center group-hover:bg-[#a8fbd3] group-hover:border-[#a8fbd3] group-hover:text-black transition-all duration-300">
-                   <ArrowUpRight className="w-5 h-5 md:w-7 md:h-7" />
-                </div>
-                <span className="text-xs md:text-sm font-bold uppercase tracking-[0.2em]">Visit Project</span>
-             </a>
+            <div className="mt-8 md:mt-0">
+                <a 
+                href={project.url} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-3 px-6 py-3 border border-white/20 rounded-full hover:bg-white hover:text-black transition-all duration-300 group"
+                >
+                    <span className="text-[10px] font-bold uppercase tracking-widest">View Live</span>
+                    <ArrowUpRight className="w-4 h-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                </a>
+            </div>
           </div>
         </div>
 
         {/* RIGHT COLUMN (IMAGE) */}
-        <div className="w-full md:w-[55%] h-[300px] md:h-full relative overflow-hidden bg-white/5 group">
-           <div className="absolute inset-0 bg-black/10 z-10 group-hover:bg-transparent transition-colors duration-500" />
+        <div className="w-full md:w-[55%] h-full relative overflow-hidden group">
+           <div className="absolute inset-0 bg-gradient-to-l from-transparent to-[#111] z-10 opacity-50 md:opacity-100" />
            
            {/* Desktop Image */}
            <img 
              src={project.desktopImg} 
              alt={project.name} 
-             className="hidden md:block absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+             className="hidden md:block absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
            />
            
            {/* Mobile Image */}
            <img 
              src={project.mobileImg} 
              alt={project.name} 
-             className="md:hidden absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+             className="md:hidden absolute inset-0 w-full h-full object-cover object-top"
            />
         </div>
 
@@ -154,27 +161,42 @@ const Card: React.FC<CardProps> = ({ project, index, total }) => {
 };
 
 const PortfolioSection: React.FC = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start start', 'end end']
+  });
+
   return (
-    <section id="portfolio" className="relative bg-[#050505] pt-24 md:pt-32 pb-24 px-4 md:px-6">
+    <section ref={containerRef} id="portfolio" className="relative bg-[#050505] pt-24 pb-24 px-4 md:px-6">
       
       {/* Section Header */}
-      <div className="max-w-[1600px] mx-auto mb-16 md:mb-24 px-2 md:px-6">
+      <div className="max-w-[1600px] mx-auto mb-12 md:mb-24 px-2 md:px-6 text-center md:text-left">
           <span className="text-[#a8fbd3] font-mono text-[9px] md:text-sm tracking-[0.5em] uppercase mb-4 block opacity-60">Selected Works</span>
-          <h2 className="text-[10vw] md:text-8xl font-heading font-bold uppercase tracking-tighter leading-none text-white">
-            Digital <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#a8fbd3] to-white opacity-80">Benchmarks</span>
+          <h2 className="text-[12vw] md:text-8xl font-heading font-bold uppercase tracking-tighter leading-none text-white">
+            Digital <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-white opacity-90">Architecture</span>
           </h2>
       </div>
 
       {/* Stack Container */}
-      <div className="flex flex-col gap-12 md:gap-0 pb-20">
-        {PROJECTS.map((project, index) => (
-          <Card 
-            key={project.id} 
-            project={project} 
-            index={index} 
-            total={PROJECTS.length} 
-          />
-        ))}
+      <div className="flex flex-col w-full">
+        {PROJECTS.map((project, index) => {
+          // Calculate scale target for depth effect
+          // The further down the list, the less it scales down because it's on top
+          const targetScale = 1 - ((PROJECTS.length - index) * 0.05);
+          
+          return (
+            <Card 
+                key={project.id} 
+                project={project} 
+                index={index} 
+                total={PROJECTS.length}
+                progress={scrollYProgress}
+                range={[index * 0.25, 1]}
+                targetScale={targetScale}
+            />
+          );
+        })}
       </div>
 
     </section>

@@ -92,6 +92,68 @@ const TESTIMONIALS_DATA: Testimonial[] = [
   }
 ];
 
+// Helper Component for the Purple Neural Effect
+const NeuralNetworkEffect = () => {
+  return (
+    <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+      {/* Central Glow */}
+      <div className="absolute w-[300px] h-[300px] bg-purple-600/20 rounded-full blur-[80px] animate-pulse" />
+      
+      <svg className="absolute w-[120%] h-[120%] z-0 opacity-40" viewBox="0 0 400 400">
+        <defs>
+          <linearGradient id="neuralGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0" />
+            <stop offset="50%" stopColor="#d8b4fe" stopOpacity="1" />
+            <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        
+        {/* Animated Synapses */}
+        {[...Array(6)].map((_, i) => (
+          <motion.path
+            key={i}
+            d={`M 200,200 Q ${100 + Math.random() * 200},${50 + Math.random() * 100} ${50 + Math.random() * 300},${50 + Math.random() * 300}`}
+            fill="none"
+            stroke="url(#neuralGrad)"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ 
+              pathLength: [0, 1, 0], 
+              opacity: [0, 0.8, 0],
+              strokeWidth: [1, 2, 1]
+            }}
+            transition={{
+              duration: 3 + Math.random() * 2,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: i * 0.5
+            }}
+          />
+        ))}
+
+        {/* Nodes */}
+        {[...Array(8)].map((_, i) => (
+          <motion.circle
+            key={`node-${i}`}
+            cx={100 + Math.random() * 200}
+            cy={100 + Math.random() * 200}
+            r="3"
+            fill="#a78bfa"
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: [0, 1, 0], scale: [0, 1.5, 0] }}
+            transition={{
+              duration: 2 + Math.random() * 2,
+              repeat: Infinity,
+              delay: Math.random() * 2
+            }}
+          />
+        ))}
+      </svg>
+    </div>
+  );
+};
+
 const App: React.FC = () => {
   const { scrollYProgress } = useScroll();
   const y = useTransform(scrollYProgress, [0, 1], [0, -80]);
@@ -239,11 +301,23 @@ const App: React.FC = () => {
             <span className="w-6 md:w-12 h-px bg-[#a8fbd3]/50"/>
           </motion.div>
 
-          <div className="relative w-full flex justify-center items-center px-4 overflow-visible mb-6">
+          {/* NEURAL LOGO CONTAINER */}
+          <div className="relative w-full flex justify-center items-center px-4 overflow-visible mb-6 group">
+            
+            <NeuralNetworkEffect />
+
+            {/* The Logo itself */}
             <img 
               src={LOGO_URL} 
               alt="REMAKING" 
-              className="w-[85vw] max-w-[800px] h-auto object-contain brightness-0 invert drop-shadow-[0_0_30px_rgba(168,251,211,0.2)]" 
+              className="relative z-10 w-[85vw] max-w-[800px] h-auto object-contain brightness-0 invert drop-shadow-[0_0_25px_rgba(139,92,246,0.3)]" 
+            />
+            
+            {/* Occasional Electric Glitch on Logo */}
+            <motion.div 
+               className="absolute inset-0 z-20 mix-blend-overlay pointer-events-none bg-purple-500/10"
+               animate={{ opacity: [0, 0.2, 0] }}
+               transition={{ duration: 0.2, repeat: Infinity, repeatDelay: 5 }}
             />
           </div>
           
@@ -253,7 +327,7 @@ const App: React.FC = () => {
             transition={{ delay: 0.4, duration: 1 }}
             className="text-sm md:text-2xl font-light max-w-[320px] md:max-w-4xl mx-auto text-white/70 leading-relaxed mt-4 md:mt-8"
           >
-            Scaling businesses through <span className="text-[#a8fbd3] font-medium italic">AI Automation</span>, <span className="text-white font-medium">Performance Traffic</span>, and <span className="text-white font-medium">Brand Strategy</span>.
+            Scaling businesses through <span className="text-purple-400 font-medium italic">AI Automation</span>, <span className="text-white font-medium">Performance Traffic</span>, and <span className="text-white font-medium">Brand Strategy</span>.
           </motion.p>
 
           <motion.div
@@ -275,8 +349,8 @@ const App: React.FC = () => {
         </motion.div>
 
         <motion.div 
-          className="absolute bottom-[-10%] w-[150vw] h-[40vh] bg-gradient-to-t from-[#a8fbd3]/15 to-transparent blur-[100px]"
-          animate={{ opacity: [0.1, 0.4, 0.1], scale: [1, 1.1, 1] }}
+          className="absolute bottom-[-10%] w-[150vw] h-[40vh] bg-gradient-to-t from-purple-900/20 to-transparent blur-[100px]"
+          animate={{ opacity: [0.1, 0.3, 0.1], scale: [1, 1.1, 1] }}
           transition={{ duration: 6, repeat: Infinity }}
         />
       </header>

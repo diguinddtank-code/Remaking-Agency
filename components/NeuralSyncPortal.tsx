@@ -88,7 +88,7 @@ const NeuralSyncPortal: React.FC = () => {
 
   const handleClaim = () => {
     // Redirect to Instagram or external conversion link
-    window.open('https://instagram.com', '_blank');
+    window.open('https://www.instagram.com/remakingagency/', '_blank');
   };
 
   return (

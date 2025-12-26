@@ -15,7 +15,7 @@ import NeuralConfigurator from './components/NeuralConfigurator';
 import PortfolioSection from './components/PortfolioSection';
 import TeamSection from './components/TeamSection';
 import AutomationShowcase from './components/AutomationShowcase';
-import CortexInterface from './components/CortexInterface';
+import NeuralSyncPortal from './components/NeuralSyncPortal';
 import MobileNavBar from './components/MobileNavBar';
 import { Service, Testimonial } from './types';
 
@@ -628,9 +628,9 @@ const App: React.FC = () => {
       {/* TEAM SECTION (NEW) */}
       <TeamSection />
 
-      {/* NEW CORTEX INTERFACE (IMMERSIVE SECTION) */}
+      {/* NEW NEURAL SYNC PORTAL (IMMERSIVE MOBILE SECTION) */}
       <section className="relative z-10">
-        <CortexInterface />
+        <NeuralSyncPortal />
       </section>
 
       {/* PORTFOLIO SECTION (RESTORED) */}

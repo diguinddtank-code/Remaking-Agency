@@ -15,9 +15,9 @@ import NeuralConfigurator from './components/NeuralConfigurator';
 import PortfolioSection from './components/PortfolioSection';
 import TeamSection from './components/TeamSection';
 import AutomationShowcase from './components/AutomationShowcase';
+import CortexInterface from './components/CortexInterface';
 import MobileNavBar from './components/MobileNavBar';
 import { Service, Testimonial } from './types';
-import { generateMarketingCopy } from './services/geminiService';
 
 // DATA TRANSLATED TO ENGLISH
 const SERVICES_DATA: Service[] = [
@@ -195,12 +195,6 @@ const App: React.FC = () => {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
 
-  // AI Copywriter State
-  const [copyTopic, setCopyTopic] = useState('');
-  const [generatedCopy, setGeneratedCopy] = useState('');
-  const [isGeneratingCopy, setIsGeneratingCopy] = useState(false);
-  const [copySuccess, setCopySuccess] = useState(false);
-
   const servicesScrollRef = useRef<HTMLDivElement>(null);
 
   const scrollServices = (direction: 'left' | 'right') => {
@@ -231,9 +225,6 @@ const App: React.FC = () => {
     } else {
       nextIndex = (currentIndex - 1 + SERVICES_DATA.length) % SERVICES_DATA.length;
     }
-    // Reset AI state on navigation
-    setCopyTopic('');
-    setGeneratedCopy('');
     setSelectedService(SERVICES_DATA[nextIndex]);
   };
 
@@ -243,24 +234,8 @@ const App: React.FC = () => {
     }
   }, [selectedService]);
 
-  const handleGenerateCopy = async () => {
-    if (!copyTopic.trim() || !selectedService) return;
-    setIsGeneratingCopy(true);
-    const result = await generateMarketingCopy(selectedService.name, copyTopic);
-    setGeneratedCopy(result);
-    setIsGeneratingCopy(false);
-  };
-
-  const handleCopyToClipboard = () => {
-    navigator.clipboard.writeText(generatedCopy);
-    setCopySuccess(true);
-    setTimeout(() => setCopySuccess(false), 2000);
-  };
-
   const closeServiceModal = () => {
     setSelectedService(null);
-    setCopyTopic('');
-    setGeneratedCopy('');
     setImageLoaded(false);
   }
 
@@ -653,6 +628,11 @@ const App: React.FC = () => {
       {/* TEAM SECTION (NEW) */}
       <TeamSection />
 
+      {/* NEW CORTEX INTERFACE (IMMERSIVE SECTION) */}
+      <section className="relative z-10">
+        <CortexInterface />
+      </section>
+
       {/* PORTFOLIO SECTION (RESTORED) */}
       <PortfolioSection />
 
@@ -852,60 +832,8 @@ const App: React.FC = () => {
                     {selectedService.description}
                   </motion.p>
                   
-                  {/* Neural Copywriter Tool */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8 relative overflow-hidden group"
-                  >
-                     <div className="absolute top-0 right-0 p-3 opacity-20">
-                       <Brain size={40} />
-                     </div>
-                     <h4 className="flex items-center gap-2 text-[#a8fbd3] font-mono text-xs uppercase tracking-widest mb-4 font-bold">
-                       <Sparkles size={14} /> Neural Copywriter
-                     </h4>
-                     <p className="text-[10px] text-gray-500 mb-4">
-                       Generate high-converting copy for this service instantly.
-                     </p>
-                     
-                     <div className="flex flex-col md:flex-row gap-3 mb-4">
-                       <input 
-                         type="text" 
-                         value={copyTopic}
-                         onChange={(e) => setCopyTopic(e.target.value)}
-                         placeholder="Enter brand name, product, or topic..."
-                         className="flex-1 h-12 bg-black/40 border border-white/10 rounded-lg px-4 text-xs md:text-sm text-white focus:border-[#a8fbd3] outline-none transition-colors"
-                       />
-                       <button 
-                         onClick={handleGenerateCopy}
-                         disabled={isGeneratingCopy || !copyTopic}
-                         className="h-12 bg-white text-black px-6 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-[#a8fbd3] disabled:opacity-50 disabled:cursor-not-allowed transition-colors w-full md:w-auto"
-                       >
-                         {isGeneratingCopy ? 'Processing...' : 'Generate'}
-                       </button>
-                     </div>
-
-                     <AnimatePresence>
-                       {generatedCopy && (
-                         <motion.div 
-                           initial={{ height: 0, opacity: 0 }}
-                           animate={{ height: 'auto', opacity: 1 }}
-                           className="bg-black/40 rounded-lg p-4 text-xs text-gray-300 font-mono leading-relaxed border border-white/5 relative group/copy"
-                         >
-                           <button 
-                             onClick={handleCopyToClipboard}
-                             className="absolute top-2 right-2 p-1.5 bg-white/10 hover:bg-white/20 rounded-md transition-colors text-white"
-                             title="Copy to clipboard"
-                           >
-                             {copySuccess ? <Check size={12} className="text-[#a8fbd3]" /> : <Copy size={12} />}
-                           </button>
-                           <div className="whitespace-pre-wrap">{generatedCopy}</div>
-                         </motion.div>
-                       )}
-                     </AnimatePresence>
-                  </motion.div>
-
+                  {/* Removed Neural Copywriter Tool */}
+                  
                   <motion.button 
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}

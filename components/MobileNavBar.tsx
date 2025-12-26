@@ -36,10 +36,16 @@ const MobileNavBar: React.FC = () => {
           <button
             key={item.id}
             onClick={() => scrollToSection(item.id === 'root' ? 'root' : item.id)}
-            className="flex-1 flex flex-col items-center gap-1.5 active:scale-95 transition-transform"
+            className="flex-1 flex flex-col items-center gap-1.5 active:scale-95 transition-transform relative"
           >
-            <div className={`p-1.5 rounded-full transition-colors ${item.id === 'estratégia' ? 'text-[#a8fbd3] bg-[#a8fbd3]/10' : 'text-white/60'}`}>
+            <div className={`p-1.5 rounded-full transition-colors relative ${item.id === 'estratégia' ? 'text-[#a8fbd3] bg-[#a8fbd3]/10' : 'text-white/60'}`}>
               {item.icon}
+              {/* Notification Badge for 'Book' item */}
+              {item.id === 'estratégia' && (
+                <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 rounded-full flex items-center justify-center border border-[#050505] animate-pulse">
+                   <span className="text-[8px] font-bold text-white">1</span>
+                </div>
+              )}
             </div>
             <span className="text-[9px] font-medium uppercase tracking-wider text-white/50 truncate w-full text-center">
               {item.label}

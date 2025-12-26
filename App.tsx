@@ -5,8 +5,8 @@
 */
 
 import React, { useRef, useState, useEffect } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Briefcase, Target, Cpu, Video, Globe, Menu, X, Brain, ChevronLeft, ChevronRight, Zap, ArrowRight, Quote, Plus, Sparkles, Layout, Copy, Check, MousePointerClick } from 'lucide-react';
+import { motion, useScroll, useSpring, useTransform, AnimatePresence } from 'framer-motion';
+import { Briefcase, Target, Cpu, Video, Globe, Menu, X, Brain, ChevronLeft, ChevronRight, Zap, ArrowRight, Quote, Plus, Sparkles, Layout, Copy, Check, MousePointerClick, Loader2 } from 'lucide-react';
 import FluidBackground from './components/FluidBackground';
 import GradientText from './components/GlitchText';
 import CustomCursor from './components/CustomCursor';
@@ -157,18 +157,59 @@ const NeuralNetworkEffect = () => {
   );
 };
 
+// Component to create the "Journey" Line visual
+const JourneyLine = () => {
+  const { scrollYProgress } = useScroll();
+  const scaleY = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+
+  return (
+    <>
+      {/* Desktop Left Timeline */}
+      <div className="fixed left-4 md:left-8 top-0 bottom-0 w-[1px] bg-white/5 z-30 hidden md:block pointer-events-none" />
+      <motion.div 
+        className="fixed left-4 md:left-8 top-0 w-[2px] bg-gradient-to-b from-[#a8fbd3] via-purple-500 to-[#a8fbd3] z-30 origin-top hidden md:block pointer-events-none shadow-[0_0_10px_#a8fbd3]"
+        style={{ height: '100%', scaleY }}
+      >
+        {/* The Traveler (Glowing Head) */}
+        <div className="absolute bottom-0 -left-[3px] w-2 h-2 bg-white rounded-full shadow-[0_0_15px_white]" />
+      </motion.div>
+
+      {/* Mobile Top Progress */}
+      <motion.div 
+        className="fixed top-0 left-0 h-[2px] bg-gradient-to-r from-[#a8fbd3] via-purple-500 to-[#a8fbd3] z-[100] origin-left md:hidden"
+        style={{ width: '100%', scaleX: scaleY }}
+      />
+    </>
+  );
+};
+
 const App: React.FC = () => {
   const { scrollYProgress } = useScroll();
   const y = useTransform(scrollYProgress, [0, 1], [0, -80]);
   const opacity = useTransform(scrollYProgress, [0, 0.12], [1, 0]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   // AI Copywriter State
   const [copyTopic, setCopyTopic] = useState('');
   const [generatedCopy, setGeneratedCopy] = useState('');
   const [isGeneratingCopy, setIsGeneratingCopy] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
+
+  const servicesScrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollServices = (direction: 'left' | 'right') => {
+    if (servicesScrollRef.current) {
+      const { current } = servicesScrollRef;
+      const scrollAmount = current.clientWidth * 0.75;
+      current.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+    }
+  };
 
   const scrollToSection = (id: string) => {
     setMobileMenuOpen(false);
@@ -196,6 +237,12 @@ const App: React.FC = () => {
     setSelectedService(SERVICES_DATA[nextIndex]);
   };
 
+  useEffect(() => {
+    if (selectedService) {
+      setImageLoaded(false);
+    }
+  }, [selectedService]);
+
   const handleGenerateCopy = async () => {
     if (!copyTopic.trim() || !selectedService) return;
     setIsGeneratingCopy(true);
@@ -214,6 +261,7 @@ const App: React.FC = () => {
     setSelectedService(null);
     setCopyTopic('');
     setGeneratedCopy('');
+    setImageLoaded(false);
   }
 
   // The provided logo URL
@@ -223,14 +271,15 @@ const App: React.FC = () => {
     <div className="relative min-h-screen text-white selection:bg-[#a8fbd3] selection:text-black cursor-auto md:cursor-none overflow-x-hidden bg-[#0a0a0a]">
       <CustomCursor />
       <FluidBackground />
+      <JourneyLine />
       <MobileNavBar />
       
-      {/* Navigation - Improved Glassmorphism and Layout */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-4 md:py-6 bg-black/60 backdrop-blur-md border-b border-white/5 max-w-[1600px] mx-auto w-full transition-all">
+      {/* Navigation - Improved Glassmorphism, Layout and Responsiveness */}
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-4 md:py-6 bg-black/80 backdrop-blur-xl border-b border-white/5 max-w-[1600px] mx-auto w-full transition-all">
         <motion.div 
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="cursor-default z-50 flex items-center"
+          className="cursor-default z-50 flex items-center shrink-0"
         >
           {/* Logo Implementation */}
           <img 
@@ -240,7 +289,7 @@ const App: React.FC = () => {
           />
         </motion.div>
         
-        <div className="hidden md:flex gap-10 text-xs font-bold tracking-widest uppercase">
+        <div className="hidden md:flex gap-10 text-xs font-bold tracking-widest uppercase pl-8">
           {/* Restored Portfolio to list */}
           {['Services', 'Method', 'Team', 'Portfolio', 'Simulator', 'Results'].map((item) => (
             <button 
@@ -255,7 +304,7 @@ const App: React.FC = () => {
           ))}
         </div>
         
-        <div className="flex items-center gap-3 md:gap-4">
+        <div className="flex items-center gap-3 md:gap-4 shrink-0">
           <button 
             onClick={() => scrollToSection('estratégia')}
             className="hidden md:inline-flex bg-white/10 hover:bg-[#a8fbd3] hover:text-black border border-white/20 px-6 py-2.5 text-[10px] md:text-xs font-bold tracking-widest uppercase transition-all duration-300 rounded-full"
@@ -385,7 +434,7 @@ const App: React.FC = () => {
                 {/* Vertical Scanning Line */}
                 <motion.div 
                    className="absolute left-0 right-0 h-[50px] bg-gradient-to-b from-transparent via-[#d8b4fe] to-transparent opacity-50"
-                   animate={{ top: ['-20%', '120%'] }}
+                   animate={{ top: ['-20%', '100%'] }}
                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
                 />
                 
@@ -453,31 +502,60 @@ const App: React.FC = () => {
 
       {/* SERVICES SECTION */}
       <section id="services" className="relative z-10 py-16 md:py-32 bg-[#0a0a0a]">
-        <div className="max-w-[1400px] mx-auto">
-          <div className="flex flex-col mb-16 md:mb-24 px-6 md:px-12">
-            <span className="text-[#a8fbd3] font-mono text-[10px] tracking-[0.4em] uppercase mb-4 block opacity-60">01. Solutions</span>
-            {/* Standardized Title */}
-            <h2 className="text-[12vw] md:text-8xl font-heading font-bold uppercase leading-[0.85] tracking-tighter">
-              The <br/> 
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#a8fbd3] via-[#4fb7b3] to-[#a8fbd3] bg-[length:200%_auto] animate-[shimmer_6s_infinite_linear]">Ecosystem</span>
-            </h2>
+        <div className="max-w-[1600px] mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-12 md:mb-16 px-6 md:px-12">
+            <div className="flex flex-col">
+              <span className="text-[#a8fbd3] font-mono text-[10px] tracking-[0.4em] uppercase mb-4 block opacity-60">01. Solutions</span>
+              {/* Standardized Title */}
+              <h2 className="text-[12vw] md:text-8xl font-heading font-bold uppercase leading-[0.85] tracking-tighter">
+                The <br/> 
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#a8fbd3] via-[#4fb7b3] to-[#a8fbd3] bg-[length:200%_auto] animate-[shimmer_6s_infinite_linear]">Ecosystem</span>
+              </h2>
+            </div>
+            
+            {/* Carousel Navigation */}
+            <div className="flex gap-4 mt-8 md:mt-0">
+               <button 
+                 onClick={() => scrollServices('left')}
+                 className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all active:scale-95 group"
+               >
+                 <ChevronLeft size={24} className="group-hover:-translate-x-1 transition-transform" />
+               </button>
+               <button 
+                 onClick={() => scrollServices('right')}
+                 className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all active:scale-95 group"
+               >
+                 <ChevronRight size={24} className="group-hover:translate-x-1 transition-transform" />
+               </button>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 border-t border-white/10">
-            {SERVICES_DATA.map((service) => (
-              <ServiceCard 
+          {/* Carousel Container */}
+          <div 
+            ref={servicesScrollRef}
+            className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth pb-12 px-6 md:px-12 gap-0"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {SERVICES_DATA.map((service, index) => (
+              <div 
                 key={service.id} 
-                artist={{ 
-                  id: service.id, 
-                  name: service.name, 
-                  genre: service.category, 
-                  image: service.image, 
-                  day: service.tag, 
-                  description: service.description 
-                }} 
-                onClick={() => setSelectedService(service)} 
-              />
+                className="min-w-[85vw] md:min-w-[450px] lg:min-w-[500px] snap-center shrink-0 border-r border-white/10 last:border-r-0"
+              >
+                <ServiceCard 
+                  artist={{ 
+                    id: service.id, 
+                    name: service.name, 
+                    genre: service.category, 
+                    image: service.image, 
+                    day: service.tag, 
+                    description: service.description 
+                  }} 
+                  onClick={() => setSelectedService(service)} 
+                />
+              </div>
             ))}
+             {/* End Spacer */}
+             <div className="min-w-[5vw] shrink-0" />
           </div>
         </div>
       </section>
@@ -712,15 +790,18 @@ const App: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
             onClick={closeServiceModal}
-            className="fixed inset-0 z-[60] flex items-center justify-center p-0 md:p-4 bg-black/98 backdrop-blur-2xl cursor-auto"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 bg-black/90 backdrop-blur-3xl cursor-auto"
           >
             <motion.div
-              initial={{ scale: 1.1, opacity: 0, y: 20 }}
+              layoutId={`card-${selectedService.id}`}
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 1.1, opacity: 0, y: 20 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full h-full md:h-auto md:max-w-6xl bg-[#080808] md:border md:border-white/10 overflow-y-auto md:overflow-hidden flex flex-col md:flex-row shadow-2xl"
+              className="relative w-full h-full md:h-[85vh] md:max-h-[800px] md:max-w-6xl bg-[#080808] border border-white/10 rounded-[2rem] overflow-hidden flex flex-col md:flex-row shadow-2xl"
             >
               <button
                 onClick={closeServiceModal}
@@ -729,18 +810,24 @@ const App: React.FC = () => {
                 <X size={20} />
               </button>
 
-              <div className="w-full md:w-1/2 h-[40vh] md:h-auto relative overflow-hidden">
+              <div className="w-full md:w-1/2 h-[35vh] md:h-auto relative overflow-hidden bg-white/5">
+                {!imageLoaded && (
+                  <div className="absolute inset-0 flex items-center justify-center z-10">
+                    <Loader2 className="w-8 h-8 text-[#a8fbd3] animate-spin" />
+                  </div>
+                )}
                 <img 
                   src={selectedService.image} 
                   alt={selectedService.name} 
-                  className="absolute inset-0 w-full h-full object-cover grayscale brightness-75 md:brightness-100"
+                  onLoad={() => setImageLoaded(true)}
+                  className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ${imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'} grayscale brightness-75 md:brightness-100`}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-transparent to-transparent" />
               </div>
 
-              <div className="w-full md:w-1/2 p-8 md:p-16 flex flex-col">
+              <div className="w-full md:w-1/2 flex flex-col h-full relative">
                 {/* Scrollable Content */}
-                <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
+                <div className="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-12">
                   <motion.span 
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -782,18 +869,18 @@ const App: React.FC = () => {
                        Generate high-converting copy for this service instantly.
                      </p>
                      
-                     <div className="flex gap-2 mb-4 flex-col md:flex-row">
+                     <div className="flex flex-col md:flex-row gap-3 mb-4">
                        <input 
                          type="text" 
                          value={copyTopic}
                          onChange={(e) => setCopyTopic(e.target.value)}
                          placeholder="Enter brand name, product, or topic..."
-                         className="flex-1 bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-xs text-white focus:border-[#a8fbd3] outline-none transition-colors"
+                         className="flex-1 h-12 bg-black/40 border border-white/10 rounded-lg px-4 text-xs md:text-sm text-white focus:border-[#a8fbd3] outline-none transition-colors"
                        />
                        <button 
                          onClick={handleGenerateCopy}
                          disabled={isGeneratingCopy || !copyTopic}
-                         className="bg-white text-black px-4 py-3 md:py-2 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-[#a8fbd3] disabled:opacity-50 disabled:cursor-not-allowed transition-colors w-full md:w-auto"
+                         className="h-12 bg-white text-black px-6 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-[#a8fbd3] disabled:opacity-50 disabled:cursor-not-allowed transition-colors w-full md:w-auto"
                        >
                          {isGeneratingCopy ? 'Processing...' : 'Generate'}
                        </button>
@@ -829,11 +916,11 @@ const App: React.FC = () => {
                   </motion.button>
                 </div>
 
-                <div className="flex justify-between items-center mt-6 pt-6 border-t border-white/5 shrink-0">
-                   <button onClick={() => navigateService('prev')} className="flex items-center gap-3 text-white/30 hover:text-white transition-colors uppercase text-[9px] font-bold tracking-[0.3em]">
+                <div className="flex justify-between items-center p-6 md:p-8 border-t border-white/5 bg-[#080808] shrink-0">
+                   <button onClick={() => navigateService('prev')} className="flex items-center gap-3 text-white/30 hover:text-white transition-colors uppercase text-[9px] font-bold tracking-[0.3em] p-2 hover:bg-white/5 rounded-lg">
                      <ChevronLeft size={14} /> Prev
                    </button>
-                   <button onClick={() => navigateService('next')} className="flex items-center gap-3 text-white/30 hover:text-white transition-colors uppercase text-[9px] font-bold tracking-[0.3em]">
+                   <button onClick={() => navigateService('next')} className="flex items-center gap-3 text-white/30 hover:text-white transition-colors uppercase text-[9px] font-bold tracking-[0.3em] p-2 hover:bg-white/5 rounded-lg">
                      Next <ChevronRight size={14} />
                    </button>
                 </div>

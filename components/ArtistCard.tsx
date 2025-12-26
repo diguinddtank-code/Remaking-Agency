@@ -13,12 +13,13 @@ import { ArrowUpRight } from 'lucide-react';
 interface ArtistCardProps {
   artist: Artist;
   onClick: () => void;
+  className?: string;
 }
 
-const ArtistCard: React.FC<ArtistCardProps> = ({ artist, onClick }) => {
+const ArtistCard: React.FC<ArtistCardProps> = ({ artist, onClick, className = '' }) => {
   return (
     <motion.div
-      className="group relative h-[480px] md:h-[600px] w-full overflow-hidden border-b md:border-r border-white/10 bg-[#0a0a0a] cursor-pointer"
+      className={`group relative h-[480px] md:h-[600px] w-full overflow-hidden bg-[#0a0a0a] cursor-pointer ${className}`}
       initial="rest"
       whileHover="hover"
       whileTap="hover"

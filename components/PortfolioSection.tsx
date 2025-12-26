@@ -16,6 +16,7 @@ interface Project {
   desktopImg: string;
   mobileImg: string;
   year: string;
+  color: string;
 }
 
 const PROJECTS: Project[] = [
@@ -26,7 +27,8 @@ const PROJECTS: Project[] = [
     year: '2024',
     url: 'https://bilu-form.vercel.app/',
     desktopImg: 'https://i.imgur.com/KUuLn9H.png',
-    mobileImg: 'https://i.imgur.com/2cz3Uqx.png'
+    mobileImg: 'https://i.imgur.com/2cz3Uqx.png',
+    color: '#1a1a1a'
   },
   {
     id: 'covered',
@@ -35,7 +37,8 @@ const PROJECTS: Project[] = [
     year: '2024',
     url: 'https://covered-bridge-form.vercel.app/',
     desktopImg: 'https://i.imgur.com/bYpBYAw.png',
-    mobileImg: 'https://i.imgur.com/SHEMMPl.png'
+    mobileImg: 'https://i.imgur.com/SHEMMPl.png',
+    color: '#161616'
   },
   {
     id: 'douglas',
@@ -44,7 +47,8 @@ const PROJECTS: Project[] = [
     year: '2024',
     url: 'https://psi-douglas-alerrander.vercel.app',
     desktopImg: 'https://i.imgur.com/o3WLowO.png',
-    mobileImg: 'https://i.imgur.com/LwdoShJ.png'
+    mobileImg: 'https://i.imgur.com/LwdoShJ.png',
+    color: '#121212'
   },
   {
     id: 'star',
@@ -53,106 +57,99 @@ const PROJECTS: Project[] = [
     year: '2023',
     url: 'https://starcleaning-ten.vercel.app/',
     desktopImg: 'https://i.imgur.com/NZGOgev.png',
-    mobileImg: 'https://i.imgur.com/ASRzssV.png'
+    mobileImg: 'https://i.imgur.com/ASRzssV.png',
+    color: '#0a0a0a'
   }
 ];
 
-interface CardProps {
+interface ProjectCardProps {
   project: Project;
   index: number;
-  total: number;
-  range: [number, number];
   targetScale: number;
   progress: MotionValue<number>;
+  range: number[];
 }
 
-const Card: React.FC<CardProps> = ({ project, index, total, progress, range, targetScale }) => {
+const ProjectCard: React.FC<ProjectCardProps> = ({ 
+  project, 
+  index, 
+  targetScale, 
+  progress, 
+  range 
+}) => {
+  const container = useRef(null);
   
-  // Create a scale effect based on the scroll progress of the container
-  // As the card moves up the stack (gets covered), it scales down slightly to create depth
+  // Internal scroll progress for entrance animations (Parallax)
+  const { scrollYProgress } = useScroll({
+    target: container,
+    offset: ['start end', 'start start']
+  });
+
+  // Image zooms out slightly as card enters viewport
+  const imageScale = useTransform(scrollYProgress, [0, 1], [1.4, 1]);
+  
+  // Card scales down as it moves up (stacking effect driven by parent progress)
   const scale = useTransform(progress, range, [1, targetScale]);
-  
+
   return (
-    <div 
-      className="sticky h-screen flex items-center justify-center"
-      style={{ 
-        // This ensures they stick at the top but with a tiny offset so we see the "stack" edge
-        top: `calc(10% + ${index * 15}px)`,
-        marginBottom: index === total - 1 ? 0 : '-20vh' // Pulls the next card up sooner
-      }}
-    >
-      {/* CARD CONTAINER */}
+    // Height reduced to h-auto min-h-[70vh] to remove "gigantic spaces" caused by excessive container height
+    // Sticky top calc made much tighter (starts at 4rem, increments by only 25px)
+    <div ref={container} className="h-auto min-h-[75vh] md:h-screen flex items-center justify-center sticky top-0 px-4 md:px-4">
       <motion.div 
-        className="relative flex flex-col md:flex-row bg-[#111] border border-white/10 overflow-hidden w-full max-w-[1400px] mx-auto h-[60vh] md:h-[600px] rounded-[2rem] shadow-[0_-50px_100px_rgba(0,0,0,0.7)] origin-top"
         style={{ 
-            scale,
-            // Dynamic Z-index to ensure correct layering
-            zIndex: index 
-        }}
-        initial={{ y: 100, opacity: 0 }}
-        whileInView={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        viewport={{ once: true, margin: "-10%" }}
+          scale, 
+          // Compact Stacking Logic:
+          // Starts at 4rem (header offset) + very small increment per index
+          top: `calc(4rem + ${index * 25}px)` 
+        }} 
+        className="relative flex flex-col md:flex-row w-full max-w-6xl h-[60vh] md:h-[80vh] bg-[#09090b] rounded-2xl md:rounded-[2.5rem] border border-white/10 overflow-hidden shadow-2xl origin-top"
       >
-        
-        {/* LEFT COLUMN (TEXT) */}
-        <div className="w-full md:w-[45%] p-8 md:p-12 flex flex-col justify-between relative z-10 bg-[#111]">
-          <div className="flex flex-col h-full justify-between">
-            <div className="flex items-center gap-4 mb-6">
-              <span className="text-[#a8fbd3] font-mono text-xs tracking-[0.2em]">0{index + 1}</span>
-              <span className="h-px w-12 bg-white/20"></span>
-            </div>
-
+        {/* TEXT SECTION */}
+        <div className="w-full md:w-5/12 p-6 md:p-12 flex flex-col justify-between relative z-20 order-2 md:order-1 bg-[#09090b]">
             <div>
-                <motion.h3 
-                    className="text-[10vw] md:text-5xl lg:text-6xl font-heading font-bold uppercase leading-[0.9] text-white tracking-tighter mb-4"
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 }}
-                >
+              <div className="flex items-center gap-3 mb-4 md:mb-6">
+                <span className="text-[#a8fbd3] font-mono text-xs tracking-widest">0{index + 1}</span>
+                <span className="h-px w-8 bg-white/20"></span>
+                <span className="text-white/40 font-mono text-xs tracking-widest">{project.year}</span>
+              </div>
+              
+              <h3 className="text-3xl md:text-5xl lg:text-6xl font-heading font-bold uppercase leading-[0.9] text-white tracking-tighter mb-2 md:mb-4">
                 {project.name}
-                </motion.h3>
-                <motion.p 
-                    className="text-purple-400 font-mono text-[10px] md:text-xs tracking-[0.3em] uppercase"
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ delay: 0.3 }}
-                >
+              </h3>
+              <p className="text-[#a8fbd3] font-mono text-[9px] md:text-xs tracking-[0.3em] uppercase opacity-80">
                 {project.category}
-                </motion.p>
+              </p>
             </div>
 
-            <div className="mt-8 md:mt-0">
-                <a 
+            <div className="pt-6 md:pt-8">
+               <a 
                 href={project.url} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-3 px-6 py-3 border border-white/20 rounded-full hover:bg-white hover:text-black transition-all duration-300 group"
-                >
-                    <span className="text-[10px] font-bold uppercase tracking-widest">View Live</span>
-                    <ArrowUpRight className="w-4 h-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                </a>
+                className="group inline-flex items-center gap-3 px-5 py-3 md:px-8 md:py-4 bg-white/5 border border-white/10 hover:bg-[#a8fbd3] hover:text-black hover:border-[#a8fbd3] rounded-full transition-all duration-300"
+               >
+                 <span className="font-bold uppercase text-[9px] md:text-[10px] md:text-xs tracking-widest">View Project</span>
+                 <ArrowUpRight className="w-4 h-4" />
+               </a>
             </div>
-          </div>
         </div>
 
-        {/* RIGHT COLUMN (IMAGE) */}
-        <div className="w-full md:w-[55%] h-full relative overflow-hidden group">
-           <div className="absolute inset-0 bg-gradient-to-l from-transparent to-[#111] z-10 opacity-50 md:opacity-100" />
-           
-           {/* Desktop Image */}
-           <img 
-             src={project.desktopImg} 
-             alt={project.name} 
-             className="hidden md:block absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-           />
-           
-           {/* Mobile Image */}
-           <img 
-             src={project.mobileImg} 
-             alt={project.name} 
-             className="md:hidden absolute inset-0 w-full h-full object-cover object-top"
-           />
+        {/* IMAGE SECTION */}
+        <div className="w-full md:w-7/12 h-[35%] md:h-full relative overflow-hidden order-1 md:order-2">
+            <motion.div 
+              style={{ scale: imageScale }}
+              className="w-full h-full"
+            >
+               <img 
+                 src={project.desktopImg} 
+                 alt={project.name} 
+                 className="absolute inset-0 w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-500"
+               />
+               {/* Mobile Overlay Gradient */}
+               <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] to-transparent md:hidden" />
+               {/* Desktop Side Gradient */}
+               <div className="absolute inset-0 bg-gradient-to-r from-[#09090b] via-transparent to-transparent hidden md:block" />
+            </motion.div>
         </div>
 
       </motion.div>
@@ -161,44 +158,43 @@ const Card: React.FC<CardProps> = ({ project, index, total, progress, range, tar
 };
 
 const PortfolioSection: React.FC = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const container = useRef(null);
+  
   const { scrollYProgress } = useScroll({
-    target: containerRef,
+    target: container,
     offset: ['start start', 'end end']
   });
 
   return (
-    <section ref={containerRef} id="portfolio" className="relative bg-[#050505] pt-24 pb-24 px-4 md:px-6">
+    <section id="portfolio" className="relative bg-[#050505]">
       
-      {/* Section Header */}
-      <div className="max-w-[1600px] mx-auto mb-12 md:mb-24 px-2 md:px-6 text-center md:text-left">
-          <span className="text-[#a8fbd3] font-mono text-[9px] md:text-sm tracking-[0.5em] uppercase mb-4 block opacity-60">Selected Works</span>
-          <h2 className="text-[12vw] md:text-8xl font-heading font-bold uppercase tracking-tighter leading-none text-white">
-            Digital <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-white opacity-90">Architecture</span>
-          </h2>
+      {/* Introduction */}
+      <div className="pt-24 md:pt-32 pb-6 md:pb-10 px-6 max-w-[1600px] mx-auto">
+        <span className="text-[#a8fbd3] font-mono text-[9px] md:text-sm tracking-[0.5em] uppercase mb-4 block opacity-60">Selected Works</span>
+        <h2 className="text-[12vw] md:text-8xl font-heading font-bold uppercase tracking-tighter leading-none text-white">
+          Digital <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#a8fbd3] to-white opacity-80">Benchmarks</span>
+        </h2>
       </div>
 
       {/* Stack Container */}
-      <div className="flex flex-col w-full">
-        {PROJECTS.map((project, index) => {
-          // Calculate scale target for depth effect
-          // The further down the list, the less it scales down because it's on top
-          const targetScale = 1 - ((PROJECTS.length - index) * 0.05);
+      <div ref={container} className="relative pb-[5vh] md:pb-[10vh]">
+        {PROJECTS.map((project, i) => {
+          // The target scale logic: each subsequent card scales down slightly less than the previous one
+          // to create the "stacked deck" depth effect
+          const targetScale = 1 - ((PROJECTS.length - i) * 0.05);
           
           return (
-            <Card 
-                key={project.id} 
-                project={project} 
-                index={index} 
-                total={PROJECTS.length}
-                progress={scrollYProgress}
-                range={[index * 0.25, 1]}
-                targetScale={targetScale}
+            <ProjectCard 
+              key={i} 
+              index={i} 
+              project={project} 
+              progress={scrollYProgress}
+              range={[i * 0.25, 1]}
+              targetScale={targetScale}
             />
           );
         })}
       </div>
-
     </section>
   );
 };

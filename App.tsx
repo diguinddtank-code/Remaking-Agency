@@ -13,7 +13,9 @@ import CustomCursor from './components/CustomCursor';
 import ServiceCard from './components/ArtistCard';
 import NeuralConfigurator from './components/NeuralConfigurator';
 import PortfolioSection from './components/PortfolioSection';
+import TeamSection from './components/TeamSection';
 import AIChat from './components/AIChat';
+import MobileNavBar from './components/MobileNavBar';
 import { Service, Testimonial } from './types';
 
 // DATA TRANSLATED TO ENGLISH
@@ -191,6 +193,7 @@ const App: React.FC = () => {
     <div className="relative min-h-screen text-white selection:bg-[#a8fbd3] selection:text-black cursor-auto md:cursor-none overflow-x-hidden bg-[#0a0a0a]">
       <CustomCursor />
       <FluidBackground />
+      <MobileNavBar />
       <AIChat />
       
       {/* Navigation */}
@@ -209,7 +212,7 @@ const App: React.FC = () => {
         </motion.div>
         
         <div className="hidden md:flex gap-12 text-xs font-bold tracking-widest uppercase">
-          {['Services', 'Method', 'Portfolio', 'Simulator', 'Results'].map((item) => (
+          {['Services', 'Method', 'Team', 'Portfolio', 'Simulator', 'Results'].map((item) => (
             <button 
               key={item} 
               onClick={() => scrollToSection(item.toLowerCase() === 'simulator' ? 'simulator' : item.toLowerCase())}
@@ -252,8 +255,8 @@ const App: React.FC = () => {
           >
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-full bg-radial-gradient from-[#a8fbd3]/5 to-transparent pointer-events-none opacity-50" />
             
-            <div className="flex flex-col items-center gap-8 md:gap-10 relative z-10">
-              {['Services', 'Method', 'Portfolio', 'Simulator', 'Results'].map((item, i) => (
+            <div className="flex flex-col items-center gap-8 md:gap-10 relative z-10 pb-20">
+              {['Services', 'Method', 'Team', 'Portfolio', 'Simulator', 'Results'].map((item, i) => (
                 <motion.button
                   key={item}
                   initial={{ opacity: 0, y: 30 }}
@@ -277,7 +280,7 @@ const App: React.FC = () => {
             </div>
             
             <div className="absolute bottom-12 left-0 right-0 flex justify-center gap-10 text-white/20 text-[10px] font-mono tracking-widest uppercase">
-              <a href="https://www.instagram.com/remakingprodutora/" target="_blank" rel="noopener noreferrer" className="hover:text-[#a8fbd3] transition-colors">Instagram</a>
+              <a href="https://www.instagram.com/remakingagency/" target="_blank" rel="noopener noreferrer" className="hover:text-[#a8fbd3] transition-colors">Instagram</a>
               <span className="hover:text-[#a8fbd3] transition-colors">LinkedIn</span>
             </div>
           </motion.div>
@@ -488,6 +491,9 @@ const App: React.FC = () => {
         </div>
       </section>
 
+      {/* TEAM SECTION (NEW) */}
+      <TeamSection />
+
       {/* PORTFOLIO SECTION */}
       <PortfolioSection />
 
@@ -545,7 +551,7 @@ const App: React.FC = () => {
       </section>
 
       {/* STRATEGY CALL SECTION */}
-      <section id="estratégia" className="relative z-10 py-20 md:py-40 px-6 bg-black">
+      <section id="estratégia" className="relative z-10 py-20 md:py-40 px-6 bg-black mb-20 md:mb-0">
         <div className="max-w-7xl mx-auto">
           <div className="bg-gradient-to-br from-[#0c0c1a] to-[#050505] border border-white/10 p-10 md:p-32 rounded-[2.5rem] md:rounded-[4rem] text-center relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#a8fbd3]/50 to-transparent" />
@@ -573,7 +579,7 @@ const App: React.FC = () => {
         </div>
       </section>
 
-      <footer className="relative z-10 border-t border-white/5 py-16 md:py-24 bg-[#050505]/80 backdrop-blur-xl">
+      <footer className="relative z-10 border-t border-white/5 py-16 md:py-24 bg-[#050505]/80 backdrop-blur-xl mb-24 md:mb-0">
         <div className="max-w-7xl mx-auto px-8 flex flex-col items-center gap-12">
           <div className="text-center flex flex-col items-center">
              <img 
@@ -585,7 +591,7 @@ const App: React.FC = () => {
           </div>
           
           <div className="flex flex-wrap justify-center gap-6 md:gap-16">
-            <a href="https://www.instagram.com/remakingprodutora/" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white font-bold uppercase text-[9px] md:text-[10px] tracking-[0.3em] transition-all">Instagram</a>
+            <a href="https://www.instagram.com/remakingagency/" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white font-bold uppercase text-[9px] md:text-[10px] tracking-[0.3em] transition-all">Instagram</a>
             <a href="#" className="text-gray-500 hover:text-white font-bold uppercase text-[9px] md:text-[10px] tracking-[0.3em] transition-all">LinkedIn</a>
             <a href="#" className="text-gray-500 hover:text-white font-bold uppercase text-[9px] md:text-[10px] tracking-[0.3em] transition-all">Behance</a>
             <a href="#" className="text-gray-500 hover:text-white font-bold uppercase text-[9px] md:text-[10px] tracking-[0.3em] transition-all">X (Twitter)</a>

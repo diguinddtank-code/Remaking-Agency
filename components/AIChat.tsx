@@ -94,7 +94,8 @@ const AIChat: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-4 md:bottom-8 right-4 md:right-8 z-[100] flex flex-col items-end pointer-events-auto">
+    // Updated bottom position for mobile (bottom-24) to account for Mobile Nav Bar
+    <div className="fixed bottom-24 md:bottom-8 right-4 md:right-8 z-[100] flex flex-col items-end pointer-events-auto">
       <AnimatePresence>
         {isOpen && (
           <motion.div

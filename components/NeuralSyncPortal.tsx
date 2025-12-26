@@ -71,6 +71,11 @@ const NeuralSyncPortal: React.FC = () => {
     });
   };
 
+  const handleClaim = () => {
+    // Redirect to Instagram or external conversion link
+    window.open('https://instagram.com', '_blank');
+  };
+
   return (
     <div className="relative w-full py-24 md:py-32 bg-black border-y border-white/5 overflow-hidden select-none">
       
@@ -110,7 +115,7 @@ const NeuralSyncPortal: React.FC = () => {
             animate={status === 'complete' ? { scale: 1, opacity: 1 } : { scale: 0.8, opacity: 0 }}
             className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none"
           >
-            <div className="w-full bg-[#0a0a0a]/90 backdrop-blur-xl border border-[#a8fbd3] rounded-2xl p-6 shadow-[0_0_50px_rgba(168,251,211,0.2)]">
+            <div className="w-full bg-[#0a0a0a]/90 backdrop-blur-xl border border-[#a8fbd3] rounded-2xl p-6 shadow-[0_0_50px_rgba(168,251,211,0.2)] pointer-events-auto">
                <div className="flex justify-center mb-4">
                  <div className="p-3 bg-[#a8fbd3] rounded-full text-black">
                    <Unlock size={24} />
@@ -136,8 +141,8 @@ const NeuralSyncPortal: React.FC = () => {
                </div>
 
                <button 
-                  onClick={() => document.getElementById('estratégia')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="w-full bg-white text-black py-3 rounded-lg font-bold uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 hover:bg-[#a8fbd3] transition-colors"
+                  onClick={handleClaim}
+                  className="w-full bg-white text-black py-3 rounded-lg font-bold uppercase tracking-widest text-[10px] flex items-center justify-center gap-2 hover:bg-[#a8fbd3] transition-colors cursor-pointer"
                 >
                   Claim Future <ChevronRight size={14} />
                </button>

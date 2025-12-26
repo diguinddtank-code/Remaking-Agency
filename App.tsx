@@ -6,7 +6,7 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Briefcase, Target, Cpu, Video, Globe, Menu, X, Brain, ChevronLeft, ChevronRight, Zap, ArrowRight, Quote, Plus, Sparkles, Layout, Copy, Check } from 'lucide-react';
+import { Briefcase, Target, Cpu, Video, Globe, Menu, X, Brain, ChevronLeft, ChevronRight, Zap, ArrowRight, Quote, Plus, Sparkles, Layout, Copy, Check, MousePointerClick } from 'lucide-react';
 import FluidBackground from './components/FluidBackground';
 import GradientText from './components/GlitchText';
 import CustomCursor from './components/CustomCursor';
@@ -234,7 +234,7 @@ const App: React.FC = () => {
           animate={{ opacity: 1, x: 0 }}
           className="cursor-default z-50 flex items-center"
         >
-          {/* Logo Implementation - Using CSS filter to ensure visibility on dark background if the source is black */}
+          {/* Logo Implementation */}
           <img 
             src={LOGO_URL} 
             alt="Remaking Agency Logo" 
@@ -340,11 +340,11 @@ const App: React.FC = () => {
             
             <NeuralNetworkEffect />
 
-            {/* The Logo itself */}
+            {/* The Logo itself - REDUCED SIZE ON DESKTOP */}
             <img 
               src={LOGO_URL} 
               alt="REMAKING" 
-              className="relative z-10 w-[85vw] md:w-[60vw] max-w-[800px] h-auto object-contain brightness-0 invert drop-shadow-[0_0_25px_rgba(139,92,246,0.3)]" 
+              className="relative z-10 w-[85vw] md:w-[35vw] max-w-[500px] h-auto object-contain brightness-0 invert drop-shadow-[0_0_25px_rgba(139,92,246,0.3)]" 
             />
             
             {/* Occasional Electric Glitch on Logo */}
@@ -411,10 +411,11 @@ const App: React.FC = () => {
       </div>
 
       {/* SERVICES SECTION */}
-      <section id="services" className="relative z-10 py-20 md:py-32 bg-[#0a0a0a]">
+      <section id="services" className="relative z-10 py-16 md:py-32 bg-[#0a0a0a]">
         <div className="max-w-[1400px] mx-auto">
           <div className="flex flex-col mb-16 md:mb-24 px-6 md:px-12">
             <span className="text-[#a8fbd3] font-mono text-[10px] tracking-[0.4em] uppercase mb-4 block opacity-60">01. Solutions</span>
+            {/* Standardized Title */}
             <h2 className="text-[12vw] md:text-8xl font-heading font-bold uppercase leading-[0.85] tracking-tighter">
               The <br/> 
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#a8fbd3] via-[#4fb7b3] to-[#a8fbd3] bg-[length:200%_auto] animate-[shimmer_6s_infinite_linear]">Ecosystem</span>
@@ -441,11 +442,12 @@ const App: React.FC = () => {
       </section>
 
       {/* METHOD SECTION */}
-      <section id="method" className="relative z-10 py-20 md:py-32 bg-black/40 border-t border-white/5 overflow-hidden">
+      <section id="method" className="relative z-10 py-16 md:py-32 bg-black/40 border-t border-white/5 overflow-hidden">
         <div className="max-w-[1400px] mx-auto px-6 relative">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 md:gap-20 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 md:gap-20 items-center">
             <div className="lg:col-span-6">
               <span className="text-[#a8fbd3] font-mono text-[10px] tracking-[0.4em] uppercase mb-6 block opacity-60">02. The Logic</span>
+              {/* Standardized Title */}
               <h2 className="text-[12vw] md:text-8xl font-heading font-bold mb-10 md:mb-12 leading-none tracking-tighter">
                 Results over <br className="hidden md:block" /> <GradientText text="PROMISES" className="text-[12vw] md:text-8xl" />
               </h2>
@@ -523,7 +525,7 @@ const App: React.FC = () => {
       </section>
 
       {/* NEW AUTOMATION SHOWCASE SECTION */}
-      <section className="relative z-10 py-12 md:py-24 bg-[#0a0a0a] border-t border-white/5">
+      <section className="relative z-10 py-16 md:py-24 bg-[#0a0a0a] border-t border-white/5">
          <div className="max-w-[1400px] mx-auto px-6">
             <AutomationShowcase />
          </div>
@@ -536,16 +538,39 @@ const App: React.FC = () => {
       <PortfolioSection />
 
       {/* NEW INTERACTIVE SESSION: NEURAL CONFIGURATOR */}
-      <section id="simulator" className="relative z-10 py-20 md:py-32 bg-[#050505] border-t border-white/5">
+      <section id="simulator" className="relative z-10 py-16 md:py-32 bg-[#050505] border-t border-white/5">
         <div className="max-w-[1400px] mx-auto px-6">
           <div className="text-center mb-16 md:mb-20">
             <span className="text-[#a8fbd3] font-mono text-[10px] tracking-[0.4em] uppercase mb-4 block opacity-60">04. Interactive Diagnostics</span>
-            <h2 className="text-[12vw] md:text-7xl font-heading font-bold uppercase tracking-tighter leading-none mb-6">
-              Design Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#a8fbd3] to-white">Strategy</span>
-            </h2>
-            <p className="text-gray-400 max-w-2xl mx-auto text-sm md:text-base">
+            {/* Standardized Title with Interactive Cue */}
+            <div className="relative inline-block">
+               <h2 className="text-[12vw] md:text-8xl font-heading font-bold uppercase tracking-tighter leading-none mb-6 relative z-10">
+                 Design Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#a8fbd3] to-white">Strategy</span>
+               </h2>
+               {/* Visual Cue for Interaction */}
+               <motion.div 
+                 className="hidden md:flex absolute -right-12 top-0 text-[#a8fbd3] bg-white/5 p-2 rounded-full border border-white/10 items-center gap-2"
+                 animate={{ y: [0, -10, 0] }}
+                 transition={{ duration: 2, repeat: Infinity }}
+               >
+                 <MousePointerClick size={16} />
+                 <span className="text-[9px] font-mono uppercase tracking-widest">Interactive</span>
+               </motion.div>
+            </div>
+            
+            <p className="text-gray-400 max-w-2xl mx-auto text-sm md:text-base mt-4">
               Use our Neural Simulator to identify bottlenecks and discover which Remaking protocol adapts to your current scaling phase.
             </p>
+            
+            <motion.div 
+               className="mt-6 flex justify-center md:hidden"
+               animate={{ y: [0, 5, 0] }}
+               transition={{ duration: 1.5, repeat: Infinity }}
+            >
+               <span className="text-[#a8fbd3] text-[10px] uppercase tracking-[0.2em] flex items-center gap-2 font-bold border border-[#a8fbd3]/30 px-4 py-2 rounded-full bg-[#a8fbd3]/5">
+                 <MousePointerClick size={14} /> Tap to Configure
+               </span>
+            </motion.div>
           </div>
           
           <NeuralConfigurator />
@@ -553,11 +578,12 @@ const App: React.FC = () => {
       </section>
 
       {/* TESTIMONIALS SECTION */}
-      <section id="results" className="relative z-10 py-20 md:py-32 border-t border-white/5 bg-[#080808]">
+      <section id="results" className="relative z-10 py-16 md:py-32 border-t border-white/5 bg-[#080808]">
         <div className="max-w-[1400px] mx-auto px-6">
           <div className="text-center mb-16 md:mb-24">
             <span className="text-[#a8fbd3] font-mono text-[10px] tracking-[0.4em] uppercase mb-4 block opacity-60">05. Impact</span>
-            <h2 className="text-[12vw] md:text-7xl font-heading font-bold uppercase tracking-tighter leading-none">
+            {/* Standardized Title */}
+            <h2 className="text-[12vw] md:text-8xl font-heading font-bold uppercase tracking-tighter leading-none">
               Elite <br className="md:hidden" /><span className="text-white/20">Results</span>
             </h2>
           </div>
@@ -589,11 +615,12 @@ const App: React.FC = () => {
       </section>
 
       {/* STRATEGY CALL SECTION */}
-      <section id="estratégia" className="relative z-10 py-20 md:py-40 px-6 bg-black mb-20 md:mb-0">
+      <section id="estratégia" className="relative z-10 py-16 md:py-40 px-6 bg-black mb-20 md:mb-0">
         <div className="max-w-[1400px] mx-auto">
           <div className="bg-gradient-to-br from-[#0c0c1a] to-[#050505] border border-white/10 p-10 md:p-32 rounded-[2.5rem] md:rounded-[4rem] text-center relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#a8fbd3]/50 to-transparent" />
             
+            {/* Standardized Title */}
             <motion.h2 
               initial={{ opacity: 0, scale: 0.98 }}
               whileInView={{ opacity: 1, scale: 1 }}
@@ -660,7 +687,7 @@ const App: React.FC = () => {
             >
               <button
                 onClick={closeServiceModal}
-                className="absolute top-6 right-6 z-20 p-4 text-white/50 hover:text-white transition-colors bg-white/5 rounded-full backdrop-blur-md"
+                className="absolute top-4 right-4 md:top-6 md:right-6 z-20 p-3 md:p-4 text-white/50 hover:text-white transition-colors bg-white/5 rounded-full backdrop-blur-md"
               >
                 <X size={20} />
               </button>
@@ -718,7 +745,7 @@ const App: React.FC = () => {
                        Generate high-converting copy for this service instantly.
                      </p>
                      
-                     <div className="flex gap-2 mb-4">
+                     <div className="flex gap-2 mb-4 flex-col md:flex-row">
                        <input 
                          type="text" 
                          value={copyTopic}
@@ -729,7 +756,7 @@ const App: React.FC = () => {
                        <button 
                          onClick={handleGenerateCopy}
                          disabled={isGeneratingCopy || !copyTopic}
-                         className="bg-white text-black px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-[#a8fbd3] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                         className="bg-white text-black px-4 py-3 md:py-2 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-[#a8fbd3] disabled:opacity-50 disabled:cursor-not-allowed transition-colors w-full md:w-auto"
                        >
                          {isGeneratingCopy ? 'Processing...' : 'Generate'}
                        </button>

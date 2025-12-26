@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import React, { useRef, useState } from 'react';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { Network, Zap, Video, MessageSquare, Cpu, Lock, Activity } from 'lucide-react';
+import React, { useRef, useState, useEffect } from 'react';
+import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
+import { Network, Zap, Video, MessageSquare, Cpu, Lock, Activity, Touchpad } from 'lucide-react';
 
 interface Skill {
   name: string;
@@ -72,22 +72,31 @@ const TEAM_DATA: TeamMember[] = [
 const MemberCard: React.FC<{ member: TeamMember }> = ({ member }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [isHovered, setHovered] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
-  // 3D Tilt Logic
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // 3D Tilt Logic variables
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
   const mouseX = useSpring(x, { stiffness: 150, damping: 15 });
   const mouseY = useSpring(y, { stiffness: 150, damping: 15 });
 
-  const rotateX = useTransform(mouseY, [-0.5, 0.5], ["10deg", "-10deg"]);
-  const rotateY = useTransform(mouseX, [-0.5, 0.5], ["-10deg", "10deg"]);
+  // Only apply tilt transforms if NOT on mobile
+  const rotateX = useTransform(mouseY, [-0.5, 0.5], isMobile ? ["0deg", "0deg"] : ["10deg", "-10deg"]);
+  const rotateY = useTransform(mouseX, [-0.5, 0.5], isMobile ? ["0deg", "0deg"] : ["-10deg", "10deg"]);
   
   const shineX = useTransform(mouseX, [-0.5, 0.5], ["0%", "100%"]);
   const shineY = useTransform(mouseY, [-0.5, 0.5], ["0%", "100%"]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current) return;
+    if (isMobile || !ref.current) return;
     const rect = ref.current.getBoundingClientRect();
     const width = rect.width;
     const height = rect.height;
@@ -103,14 +112,21 @@ const MemberCard: React.FC<{ member: TeamMember }> = ({ member }) => {
     setHovered(false);
   };
 
+  const handleMobileTap = () => {
+    if (isMobile) {
+      setHovered(!isHovered);
+    }
+  };
+
   return (
     <motion.div
       ref={ref}
       onMouseMove={handleMouseMove}
-      onMouseEnter={() => setHovered(true)}
+      onMouseEnter={() => !isMobile && setHovered(true)}
       onMouseLeave={handleMouseLeave}
+      onClick={handleMobileTap}
       style={{ perspective: 1000 }}
-      className="w-full h-[580px] md:h-[650px] cursor-auto md:cursor-none"
+      className="w-full h-[520px] md:h-[650px] cursor-pointer md:cursor-none"
     >
       <motion.div
         style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
@@ -127,15 +143,18 @@ const MemberCard: React.FC<{ member: TeamMember }> = ({ member }) => {
               scale: isHovered ? 1.05 : 1
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black/95" />
+          {/* Enhanced gradient for text readability on mobile */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/95" />
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
         </div>
 
-        {/* Holographic Overlay */}
-        <motion.div 
-          className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 z-10 pointer-events-none"
-          style={{ backgroundPosition: `${shineX}% ${shineY}%`, opacity: isHovered ? 1 : 0 }}
-        />
+        {/* Holographic Overlay (Desktop Only) */}
+        {!isMobile && (
+          <motion.div 
+            className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 z-10 pointer-events-none"
+            style={{ backgroundPosition: `${shineX}% ${shineY}%`, opacity: isHovered ? 1 : 0 }}
+          />
+        )}
         
         {/* Scan Line */}
         <motion.div 
@@ -144,12 +163,20 @@ const MemberCard: React.FC<{ member: TeamMember }> = ({ member }) => {
            transition={{ duration: 4, repeat: Infinity, ease: "linear", delay: Math.random() * 2 }}
         />
 
+        {/* Mobile Tap Hint */}
+        {isMobile && !isHovered && (
+          <div className="absolute top-4 right-4 z-30 bg-black/50 backdrop-blur px-3 py-1 rounded-full border border-white/10 flex items-center gap-2">
+            <Touchpad size={12} className="text-[#a8fbd3] animate-pulse" />
+            <span className="text-[9px] uppercase tracking-widest text-white/70">Tap info</span>
+          </div>
+        )}
+
         {/* Content Overlay */}
         <div className="absolute inset-0 z-20 p-6 md:p-8 flex flex-col justify-end transform-style-3d">
           
           <motion.div
             initial={{ y: 0 }}
-            animate={{ y: isHovered ? -20 : 0 }}
+            animate={{ y: isHovered ? (isMobile ? -10 : -20) : 0 }}
             transition={{ duration: 0.4 }}
             className="relative"
             style={{ translateZ: 50 }}
@@ -183,7 +210,7 @@ const MemberCard: React.FC<{ member: TeamMember }> = ({ member }) => {
                    {member.description}
                  </p>
                  
-                 {/* New Effect: Neural Skill Matrix */}
+                 {/* Neural Skill Matrix */}
                  <div className="bg-white/5 rounded-xl p-4 border border-white/10 backdrop-blur-sm">
                    <div className="flex items-center gap-2 mb-3">
                      <Activity size={12} className="text-[#a8fbd3]" />
@@ -220,14 +247,15 @@ const MemberCard: React.FC<{ member: TeamMember }> = ({ member }) => {
 
 const TeamSection: React.FC = () => {
   return (
-    <section id="team" className="relative z-10 py-24 md:py-40 bg-[#050505] overflow-hidden">
+    <section id="team" className="relative z-10 py-16 md:py-40 bg-[#050505] overflow-hidden">
       {/* Background Decor */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[50vh] bg-[#a8fbd3]/5 blur-[120px] rounded-full pointer-events-none" />
       
       <div className="max-w-[1400px] mx-auto px-6 relative z-10">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-16 md:mb-24 gap-6">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-12 md:mb-24 gap-6">
            <div className="max-w-3xl">
               <span className="text-[#a8fbd3] font-mono text-[10px] tracking-[0.4em] uppercase mb-4 block opacity-60">03. The Minds</span>
+              {/* Standardized Title */}
               <h2 className="text-[12vw] md:text-8xl font-heading font-bold uppercase tracking-tighter leading-[0.85] text-white">
                 Neural <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#a8fbd3] to-white opacity-80">Architects</span>
               </h2>
@@ -238,7 +266,7 @@ const TeamSection: React.FC = () => {
            </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
           {TEAM_DATA.map((member) => (
             <MemberCard key={member.id} member={member} />
           ))}

@@ -15,7 +15,6 @@ import NeuralConfigurator from './components/NeuralConfigurator';
 import PortfolioSection from './components/PortfolioSection';
 import TeamSection from './components/TeamSection';
 import AutomationShowcase from './components/AutomationShowcase';
-import AIChat from './components/AIChat';
 import MobileNavBar from './components/MobileNavBar';
 import { Service, Testimonial } from './types';
 import { generateMarketingCopy } from './services/geminiService';
@@ -225,10 +224,9 @@ const App: React.FC = () => {
       <CustomCursor />
       <FluidBackground />
       <MobileNavBar />
-      <AIChat />
       
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-5 md:py-6 mix-blend-difference bg-gradient-to-b from-black/80 to-transparent backdrop-blur-[2px] max-w-[1600px] mx-auto">
+      {/* Navigation - Improved Glassmorphism and Layout */}
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-4 md:py-6 bg-black/60 backdrop-blur-md border-b border-white/5 max-w-[1600px] mx-auto w-full transition-all">
         <motion.div 
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -238,20 +236,21 @@ const App: React.FC = () => {
           <img 
             src={LOGO_URL} 
             alt="Remaking Agency Logo" 
-            className="h-8 md:h-12 w-auto object-contain brightness-0 invert" 
+            className="h-8 md:h-10 w-auto object-contain brightness-0 invert" 
           />
         </motion.div>
         
-        <div className="hidden md:flex gap-12 text-xs font-bold tracking-widest uppercase">
+        <div className="hidden md:flex gap-10 text-xs font-bold tracking-widest uppercase">
           {/* Restored Portfolio to list */}
           {['Services', 'Method', 'Team', 'Portfolio', 'Simulator', 'Results'].map((item) => (
             <button 
               key={item} 
               onClick={() => scrollToSection(item.toLowerCase() === 'simulator' ? 'simulator' : item.toLowerCase())}
-              className="hover:text-[#a8fbd3] transition-colors text-white cursor-pointer bg-transparent border-none outline-none"
+              className="hover:text-[#a8fbd3] transition-colors text-white cursor-pointer bg-transparent border-none outline-none relative group"
               data-hover="true"
             >
               {item}
+              <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-[#a8fbd3] transition-all group-hover:w-full" />
             </button>
           ))}
         </div>
@@ -259,7 +258,7 @@ const App: React.FC = () => {
         <div className="flex items-center gap-3 md:gap-4">
           <button 
             onClick={() => scrollToSection('estratégia')}
-            className="hidden md:inline-flex border border-white px-8 py-3 text-[10px] md:text-xs font-bold tracking-widest uppercase hover:bg-white hover:text-black transition-all duration-500 text-white cursor-pointer bg-transparent"
+            className="hidden md:inline-flex bg-white/10 hover:bg-[#a8fbd3] hover:text-black border border-white/20 px-6 py-2.5 text-[10px] md:text-xs font-bold tracking-widest uppercase transition-all duration-300 rounded-full"
             data-hover="true"
           >
             Book Session
@@ -267,7 +266,7 @@ const App: React.FC = () => {
 
           <motion.button 
             whileTap={{ scale: 0.9 }}
-            className="text-white z-50 relative w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-white/5 backdrop-blur-xl rounded-full border border-white/10"
+            className="text-white z-50 relative w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-white/5 backdrop-blur-xl rounded-full border border-white/10 hover:bg-white/10 transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
              {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
@@ -320,8 +319,8 @@ const App: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* HERO SECTION */}
-      <header className="relative min-h-[100svh] flex flex-col items-center justify-center overflow-hidden px-6 pt-20">
+      {/* HERO SECTION - Added paddingTop to account for fixed header */}
+      <header className="relative min-h-[100svh] flex flex-col items-center justify-center overflow-hidden px-6 pt-32 md:pt-20">
         <motion.div 
           style={{ y, opacity }}
           className="z-10 text-center flex flex-col items-center w-full max-w-7xl"
@@ -698,13 +697,6 @@ const App: React.FC = () => {
                className="h-10 md:h-16 w-auto object-contain brightness-0 invert opacity-50 mb-6" 
              />
              <p className="text-gray-600 text-[8px] md:text-xs font-mono uppercase tracking-[0.5em] px-4">THE NEURAL FRONTIER OF PERFORMANCE MARKETING.</p>
-          </div>
-          
-          <div className="flex flex-wrap justify-center gap-6 md:gap-16">
-            <span className="text-gray-500 hover:text-white font-bold uppercase text-[9px] md:text-[10px] tracking-[0.3em] transition-all cursor-pointer">Instagram</span>
-            <span className="text-gray-500 hover:text-white font-bold uppercase text-[9px] md:text-[10px] tracking-[0.3em] transition-all cursor-pointer">LinkedIn</span>
-            <span className="text-gray-500 hover:text-white font-bold uppercase text-[9px] md:text-[10px] tracking-[0.3em] transition-all cursor-pointer">Behance</span>
-            <span className="text-gray-500 hover:text-white font-bold uppercase text-[9px] md:text-[10px] tracking-[0.3em] transition-all cursor-pointer">X (Twitter)</span>
           </div>
           
           <div className="w-full max-w-sm h-px bg-white/5" />

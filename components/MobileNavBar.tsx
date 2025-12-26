@@ -24,7 +24,7 @@ const MobileNavBar: React.FC = () => {
   const navItems = [
     { id: 'root', icon: <Home size={18} />, label: 'Home' }, 
     { id: 'services', icon: <Layers size={18} />, label: 'Services' },
-    { id: 'team', icon: <Users size={18} />, label: 'Staff' }, // Added Team/Staff
+    { id: 'team', icon: <Users size={18} />, label: 'Staff' }, 
     { id: 'portfolio', icon: <Briefcase size={18} />, label: 'Cases' },
     { id: 'simulator', icon: <Brain size={18} />, label: 'AI Sim' },
     { id: 'estratégia', icon: <Zap size={18} />, label: 'Book' },

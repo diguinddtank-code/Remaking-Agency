@@ -243,6 +243,7 @@ const App: React.FC = () => {
         </motion.div>
         
         <div className="hidden md:flex gap-12 text-xs font-bold tracking-widest uppercase">
+          {/* Restored Portfolio to list */}
           {['Services', 'Method', 'Team', 'Portfolio', 'Simulator', 'Results'].map((item) => (
             <button 
               key={item} 
@@ -287,6 +288,7 @@ const App: React.FC = () => {
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-full bg-radial-gradient from-[#a8fbd3]/5 to-transparent pointer-events-none opacity-50" />
             
             <div className="flex flex-col items-center gap-8 md:gap-10 relative z-10 pb-20">
+              {/* Restored Portfolio to mobile menu list */}
               {['Services', 'Method', 'Team', 'Portfolio', 'Simulator', 'Results'].map((item, i) => (
                 <motion.button
                   key={item}
@@ -340,19 +342,59 @@ const App: React.FC = () => {
             
             <NeuralNetworkEffect />
 
-            {/* The Logo itself - REDUCED SIZE ON DESKTOP */}
-            <img 
-              src={LOGO_URL} 
-              alt="REMAKING" 
-              className="relative z-10 w-[85vw] md:w-[35vw] max-w-[500px] h-auto object-contain brightness-0 invert drop-shadow-[0_0_25px_rgba(139,92,246,0.3)]" 
-            />
+            {/* Logo Wrapper to handle layers and masking */}
+            <div className="relative z-10 w-[85vw] md:w-[35vw] max-w-[500px]">
+              {/* 1. Invisible copy to maintain layout dimensions correctly */}
+              <img 
+                src={LOGO_URL} 
+                alt="REMAKING" 
+                className="w-full h-auto opacity-0"
+                aria-hidden="true"
+              />
+
+              {/* 2. The Base White Logo */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <img 
+                  src={LOGO_URL} 
+                  alt="REMAKING" 
+                  className="w-full h-full object-contain brightness-0 invert drop-shadow-[0_0_25px_rgba(139,92,246,0.3)]" 
+                />
+              </div>
+
+              {/* 3. The Neon Flow Effect (Masked by the Logo) */}
+              <div 
+                className="absolute inset-0 pointer-events-none mix-blend-plus-lighter"
+                style={{
+                  maskImage: `url(${LOGO_URL})`,
+                  WebkitMaskImage: `url(${LOGO_URL})`,
+                  maskSize: 'contain',
+                  WebkitMaskSize: 'contain',
+                  maskPosition: 'center',
+                  WebkitMaskPosition: 'center',
+                  maskRepeat: 'no-repeat',
+                  WebkitMaskRepeat: 'no-repeat',
+                }}
+              >
+                {/* Horizontal Flowing Purple Beam */}
+                <motion.div 
+                   className="absolute inset-0 bg-gradient-to-r from-transparent via-[#a855f7] to-transparent opacity-80"
+                   style={{ width: '200%', left: '-50%' }}
+                   animate={{ x: ['-100%', '100%'] }}
+                   transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                />
+                
+                {/* Vertical Scanning Line */}
+                <motion.div 
+                   className="absolute left-0 right-0 h-[50px] bg-gradient-to-b from-transparent via-[#d8b4fe] to-transparent opacity-50"
+                   animate={{ top: ['-20%', '120%'] }}
+                   transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                />
+                
+                {/* Subtle Electric Noise */}
+                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-30 mix-blend-overlay"></div>
+              </div>
+            </div>
             
-            {/* Occasional Electric Glitch on Logo */}
-            <motion.div 
-               className="absolute inset-0 z-20 mix-blend-overlay pointer-events-none bg-purple-500/10"
-               animate={{ opacity: [0, 0.2, 0] }}
-               transition={{ duration: 0.2, repeat: Infinity, repeatDelay: 5 }}
-            />
           </div>
           
           <motion.p
@@ -534,7 +576,7 @@ const App: React.FC = () => {
       {/* TEAM SECTION (NEW) */}
       <TeamSection />
 
-      {/* PORTFOLIO SECTION */}
+      {/* PORTFOLIO SECTION (RESTORED) */}
       <PortfolioSection />
 
       {/* NEW INTERACTIVE SESSION: NEURAL CONFIGURATOR */}
@@ -614,31 +656,34 @@ const App: React.FC = () => {
         </div>
       </section>
 
-      {/* STRATEGY CALL SECTION */}
+      {/* STRATEGY CALL SECTION - CLEANER & RESPONSIVE */}
       <section id="estratégia" className="relative z-10 py-16 md:py-40 px-6 bg-black mb-20 md:mb-0">
         <div className="max-w-[1400px] mx-auto">
-          <div className="bg-gradient-to-br from-[#0c0c1a] to-[#050505] border border-white/10 p-10 md:p-32 rounded-[2.5rem] md:rounded-[4rem] text-center relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#a8fbd3]/50 to-transparent" />
+          {/* Cleaner Container: Subtle border, less aggressive gradient, cleaner padding */}
+          <div className="bg-[#050505] border border-white/10 p-8 md:p-32 rounded-[2rem] md:rounded-[4rem] text-center relative overflow-hidden">
             
-            {/* Standardized Title */}
+            {/* Subtle top highlight */}
+            <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+            
             <motion.h2 
               initial={{ opacity: 0, scale: 0.98 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              className="text-[12vw] md:text-8xl font-heading font-bold mb-8 md:mb-12 tracking-tighter leading-none"
+              className="text-5xl md:text-8xl font-heading font-bold mb-6 md:mb-12 tracking-tighter leading-[0.9] text-white"
             >
               Ready to <br className="md:hidden"/> <span className="text-[#a8fbd3]">Remake?</span>
             </motion.h2>
-            <p className="text-sm md:text-2xl text-gray-400 mb-12 md:mb-20 max-w-2xl mx-auto font-light leading-relaxed px-4">
+
+            <p className="text-sm md:text-xl text-gray-400 mb-10 md:mb-16 max-w-2xl mx-auto font-light leading-relaxed px-2">
               AI intelligence and ad performance are no longer optional. It's the only path to dominance. Shall we code your success?
             </p>
             
             <motion.button 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="w-full md:w-auto bg-white text-black px-12 md:px-20 py-6 md:py-8 text-[11px] md:text-sm font-bold uppercase tracking-[0.5em] hover:bg-[#a8fbd3] transition-all duration-700 rounded-full shadow-[0_20px_50px_rgba(255,255,255,0.1)] flex items-center justify-center gap-4 mx-auto"
+              className="w-full md:w-auto bg-white text-black px-8 py-5 md:px-20 md:py-8 text-xs md:text-sm font-bold uppercase tracking-[0.4em] hover:bg-[#a8fbd3] transition-all duration-700 rounded-full shadow-[0_10px_40px_rgba(255,255,255,0.05)] flex items-center justify-center gap-3 mx-auto"
             >
-              Speak with Strategist <Sparkles size={18} />
+              Speak with Strategist <Sparkles size={16} />
             </motion.button>
           </div>
         </div>

@@ -50,3 +50,34 @@ export const sendMessageToGemini = async (message: string): Promise<string> => {
     return "Strategic connection error. Please retry uplink.";
   }
 };
+
+export const generateMarketingCopy = async (serviceName: string, userTopic: string): Promise<string> => {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  
+  const prompt = `
+    Act as a world-class copywriter for 'Remaking Agency'.
+    
+    Task: Generate 3 distinct, high-converting marketing copy variations.
+    Service Context: ${serviceName}
+    Brand/Topic Context: ${userTopic}
+    
+    Style Guidelines:
+    1. Psychological, persuasive, and high-end.
+    2. Use short paragraphs and punchy sentences.
+    3. Focus on pain points and rapid solutions.
+    4. Format the output clearly with bold headers for "Option 1", "Option 2", "Option 3".
+    
+    Output strictly the copy, no conversational filler.
+  `;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-3-flash-preview',
+      contents: prompt,
+    });
+    return response.text || "Copy generation sequence failed.";
+  } catch (error) {
+    console.error("Copy Gen Error:", error);
+    return "Neural engine offline. Please try manually.";
+  }
+};

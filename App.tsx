@@ -6,7 +6,7 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Briefcase, Target, Cpu, Video, Globe, Menu, X, Brain, ChevronLeft, ChevronRight, Zap, ArrowRight, Quote, Plus, Sparkles, Layout } from 'lucide-react';
+import { Briefcase, Target, Cpu, Video, Globe, Menu, X, Brain, ChevronLeft, ChevronRight, Zap, ArrowRight, Quote, Plus, Sparkles, Layout, Copy, Check } from 'lucide-react';
 import FluidBackground from './components/FluidBackground';
 import GradientText from './components/GlitchText';
 import CustomCursor from './components/CustomCursor';
@@ -14,9 +14,11 @@ import ServiceCard from './components/ArtistCard';
 import NeuralConfigurator from './components/NeuralConfigurator';
 import PortfolioSection from './components/PortfolioSection';
 import TeamSection from './components/TeamSection';
+import AutomationShowcase from './components/AutomationShowcase';
 import AIChat from './components/AIChat';
 import MobileNavBar from './components/MobileNavBar';
 import { Service, Testimonial } from './types';
+import { generateMarketingCopy } from './services/geminiService';
 
 // DATA TRANSLATED TO ENGLISH
 const SERVICES_DATA: Service[] = [
@@ -163,6 +165,12 @@ const App: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
 
+  // AI Copywriter State
+  const [copyTopic, setCopyTopic] = useState('');
+  const [generatedCopy, setGeneratedCopy] = useState('');
+  const [isGeneratingCopy, setIsGeneratingCopy] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
+
   const scrollToSection = (id: string) => {
     setMobileMenuOpen(false);
     const element = document.getElementById(id);
@@ -183,8 +191,31 @@ const App: React.FC = () => {
     } else {
       nextIndex = (currentIndex - 1 + SERVICES_DATA.length) % SERVICES_DATA.length;
     }
+    // Reset AI state on navigation
+    setCopyTopic('');
+    setGeneratedCopy('');
     setSelectedService(SERVICES_DATA[nextIndex]);
   };
+
+  const handleGenerateCopy = async () => {
+    if (!copyTopic.trim() || !selectedService) return;
+    setIsGeneratingCopy(true);
+    const result = await generateMarketingCopy(selectedService.name, copyTopic);
+    setGeneratedCopy(result);
+    setIsGeneratingCopy(false);
+  };
+
+  const handleCopyToClipboard = () => {
+    navigator.clipboard.writeText(generatedCopy);
+    setCopySuccess(true);
+    setTimeout(() => setCopySuccess(false), 2000);
+  };
+
+  const closeServiceModal = () => {
+    setSelectedService(null);
+    setCopyTopic('');
+    setGeneratedCopy('');
+  }
 
   // The provided logo URL
   const LOGO_URL = "https://i.imgur.com/kL00omR.png";
@@ -197,7 +228,7 @@ const App: React.FC = () => {
       <AIChat />
       
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-5 md:py-6 mix-blend-difference bg-gradient-to-b from-black/80 to-transparent backdrop-blur-[2px]">
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 py-5 md:py-6 mix-blend-difference bg-gradient-to-b from-black/80 to-transparent backdrop-blur-[2px] max-w-[1600px] mx-auto">
         <motion.div 
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -280,7 +311,7 @@ const App: React.FC = () => {
             </div>
             
             <div className="absolute bottom-12 left-0 right-0 flex justify-center gap-10 text-white/20 text-[10px] font-mono tracking-widest uppercase">
-              <a href="https://www.instagram.com/remakingagency/" target="_blank" rel="noopener noreferrer" className="hover:text-[#a8fbd3] transition-colors">Instagram</a>
+              <span className="hover:text-[#a8fbd3] transition-colors">Instagram</span>
               <span className="hover:text-[#a8fbd3] transition-colors">LinkedIn</span>
             </div>
           </motion.div>
@@ -313,7 +344,7 @@ const App: React.FC = () => {
             <img 
               src={LOGO_URL} 
               alt="REMAKING" 
-              className="relative z-10 w-[85vw] max-w-[800px] h-auto object-contain brightness-0 invert drop-shadow-[0_0_25px_rgba(139,92,246,0.3)]" 
+              className="relative z-10 w-[85vw] md:w-[60vw] max-w-[800px] h-auto object-contain brightness-0 invert drop-shadow-[0_0_25px_rgba(139,92,246,0.3)]" 
             />
             
             {/* Occasional Electric Glitch on Logo */}
@@ -328,7 +359,7 @@ const App: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 1 }}
-            className="text-sm md:text-2xl font-light max-w-[320px] md:max-w-4xl mx-auto text-white/70 leading-relaxed mt-4 md:mt-8"
+            className="text-sm md:text-2xl font-light max-w-[320px] md:max-w-4xl mx-auto text-white/70 leading-relaxed mt-4 md:mt-8 px-4"
           >
             Scaling businesses through <span className="text-purple-400 font-medium italic">AI Automation</span>, <span className="text-white font-medium">Performance Traffic</span>, and <span className="text-white font-medium">Brand Strategy</span>.
           </motion.p>
@@ -368,7 +399,7 @@ const App: React.FC = () => {
           {[0, 1].map((key) => (
             <div key={key} className="flex whitespace-nowrap shrink-0">
               {[...Array(4)].map((_, i) => (
-                <span key={i} className="text-2xl md:text-6xl font-heading font-black px-8 md:px-12 flex items-center gap-6">
+                <span key={i} className="text-2xl md:text-5xl lg:text-6xl font-heading font-black px-8 md:px-12 flex items-center gap-6">
                   TRAFFIC GENIUS <Plus className="w-4 h-4 md:w-8 md:h-8" /> 
                   SOCIAL AUTHORITY <Plus className="w-4 h-4 md:w-8 md:h-8" /> 
                   AI AUTOMATION <Plus className="w-4 h-4 md:w-8 md:h-8" />
@@ -381,10 +412,10 @@ const App: React.FC = () => {
 
       {/* SERVICES SECTION */}
       <section id="services" className="relative z-10 py-20 md:py-32 bg-[#0a0a0a]">
-        <div className="max-w-[1600px] mx-auto">
+        <div className="max-w-[1400px] mx-auto">
           <div className="flex flex-col mb-16 md:mb-24 px-6 md:px-12">
-            <span className="text-[#a8fbd3] font-mono text-[9px] md:text-sm tracking-[0.5em] uppercase mb-4 block opacity-60">01. Solutions</span>
-            <h2 className="text-[12vw] md:text-9xl font-heading font-bold uppercase leading-[0.85] tracking-tighter">
+            <span className="text-[#a8fbd3] font-mono text-[10px] tracking-[0.4em] uppercase mb-4 block opacity-60">01. Solutions</span>
+            <h2 className="text-[12vw] md:text-8xl font-heading font-bold uppercase leading-[0.85] tracking-tighter">
               The <br/> 
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#a8fbd3] via-[#4fb7b3] to-[#a8fbd3] bg-[length:200%_auto] animate-[shimmer_6s_infinite_linear]">Ecosystem</span>
             </h2>
@@ -411,12 +442,12 @@ const App: React.FC = () => {
 
       {/* METHOD SECTION */}
       <section id="method" className="relative z-10 py-20 md:py-32 bg-black/40 border-t border-white/5 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 relative">
+        <div className="max-w-[1400px] mx-auto px-6 relative">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 md:gap-20 items-center">
             <div className="lg:col-span-6">
-              <span className="text-[#a8fbd3] font-mono text-[9px] md:text-sm tracking-[0.5em] uppercase mb-6 block opacity-60">02. The Logic</span>
-              <h2 className="text-[10vw] md:text-8xl font-heading font-bold mb-10 md:mb-12 leading-none tracking-tighter">
-                Results over <br className="hidden md:block" /> <GradientText text="PROMISES" className="text-[12vw] md:text-9xl" />
+              <span className="text-[#a8fbd3] font-mono text-[10px] tracking-[0.4em] uppercase mb-6 block opacity-60">02. The Logic</span>
+              <h2 className="text-[12vw] md:text-8xl font-heading font-bold mb-10 md:mb-12 leading-none tracking-tighter">
+                Results over <br className="hidden md:block" /> <GradientText text="PROMISES" className="text-[12vw] md:text-8xl" />
               </h2>
               
               <div className="space-y-8 md:space-y-12">
@@ -491,6 +522,13 @@ const App: React.FC = () => {
         </div>
       </section>
 
+      {/* NEW AUTOMATION SHOWCASE SECTION */}
+      <section className="relative z-10 py-12 md:py-24 bg-[#0a0a0a] border-t border-white/5">
+         <div className="max-w-[1400px] mx-auto px-6">
+            <AutomationShowcase />
+         </div>
+      </section>
+
       {/* TEAM SECTION (NEW) */}
       <TeamSection />
 
@@ -499,10 +537,10 @@ const App: React.FC = () => {
 
       {/* NEW INTERACTIVE SESSION: NEURAL CONFIGURATOR */}
       <section id="simulator" className="relative z-10 py-20 md:py-32 bg-[#050505] border-t border-white/5">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-[1400px] mx-auto px-6">
           <div className="text-center mb-16 md:mb-20">
-            <span className="text-[#a8fbd3] font-mono text-[9px] md:text-sm tracking-[0.5em] uppercase mb-4 block opacity-60">04. Interactive Diagnostics</span>
-            <h2 className="text-[8vw] md:text-6xl font-heading font-bold uppercase tracking-tighter leading-none mb-6">
+            <span className="text-[#a8fbd3] font-mono text-[10px] tracking-[0.4em] uppercase mb-4 block opacity-60">04. Interactive Diagnostics</span>
+            <h2 className="text-[12vw] md:text-7xl font-heading font-bold uppercase tracking-tighter leading-none mb-6">
               Design Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#a8fbd3] to-white">Strategy</span>
             </h2>
             <p className="text-gray-400 max-w-2xl mx-auto text-sm md:text-base">
@@ -516,10 +554,10 @@ const App: React.FC = () => {
 
       {/* TESTIMONIALS SECTION */}
       <section id="results" className="relative z-10 py-20 md:py-32 border-t border-white/5 bg-[#080808]">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-[1400px] mx-auto px-6">
           <div className="text-center mb-16 md:mb-24">
-            <span className="text-[#a8fbd3] font-mono text-[9px] md:text-sm tracking-[0.5em] uppercase mb-4 block opacity-60">05. Impact</span>
-            <h2 className="text-[10vw] md:text-7xl font-heading font-bold uppercase tracking-tighter leading-none">
+            <span className="text-[#a8fbd3] font-mono text-[10px] tracking-[0.4em] uppercase mb-4 block opacity-60">05. Impact</span>
+            <h2 className="text-[12vw] md:text-7xl font-heading font-bold uppercase tracking-tighter leading-none">
               Elite <br className="md:hidden" /><span className="text-white/20">Results</span>
             </h2>
           </div>
@@ -535,7 +573,7 @@ const App: React.FC = () => {
                 className="group p-8 md:p-10 bg-white/[0.03] border border-white/5 rounded-[2.5rem] relative hover:bg-white/[0.07] transition-all duration-700 backdrop-blur-sm"
               >
                 <Quote className="absolute top-8 right-8 w-10 h-10 text-[#a8fbd3]/10" />
-                <p className="text-sm md:text-xl font-light leading-relaxed mb-10 italic text-gray-300">
+                <p className="text-sm md:text-lg font-light leading-relaxed mb-10 italic text-gray-300">
                   "{item.quote}"
                 </p>
                 <div className="mt-auto">
@@ -552,7 +590,7 @@ const App: React.FC = () => {
 
       {/* STRATEGY CALL SECTION */}
       <section id="estratégia" className="relative z-10 py-20 md:py-40 px-6 bg-black mb-20 md:mb-0">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-[1400px] mx-auto">
           <div className="bg-gradient-to-br from-[#0c0c1a] to-[#050505] border border-white/10 p-10 md:p-32 rounded-[2.5rem] md:rounded-[4rem] text-center relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#a8fbd3]/50 to-transparent" />
             
@@ -580,7 +618,7 @@ const App: React.FC = () => {
       </section>
 
       <footer className="relative z-10 border-t border-white/5 py-16 md:py-24 bg-[#050505]/80 backdrop-blur-xl mb-24 md:mb-0">
-        <div className="max-w-7xl mx-auto px-8 flex flex-col items-center gap-12">
+        <div className="max-w-[1400px] mx-auto px-8 flex flex-col items-center gap-12">
           <div className="text-center flex flex-col items-center">
              <img 
                src={LOGO_URL} 
@@ -591,10 +629,10 @@ const App: React.FC = () => {
           </div>
           
           <div className="flex flex-wrap justify-center gap-6 md:gap-16">
-            <a href="https://www.instagram.com/remakingagency/" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white font-bold uppercase text-[9px] md:text-[10px] tracking-[0.3em] transition-all">Instagram</a>
-            <a href="#" className="text-gray-500 hover:text-white font-bold uppercase text-[9px] md:text-[10px] tracking-[0.3em] transition-all">LinkedIn</a>
-            <a href="#" className="text-gray-500 hover:text-white font-bold uppercase text-[9px] md:text-[10px] tracking-[0.3em] transition-all">Behance</a>
-            <a href="#" className="text-gray-500 hover:text-white font-bold uppercase text-[9px] md:text-[10px] tracking-[0.3em] transition-all">X (Twitter)</a>
+            <span className="text-gray-500 hover:text-white font-bold uppercase text-[9px] md:text-[10px] tracking-[0.3em] transition-all cursor-pointer">Instagram</span>
+            <span className="text-gray-500 hover:text-white font-bold uppercase text-[9px] md:text-[10px] tracking-[0.3em] transition-all cursor-pointer">LinkedIn</span>
+            <span className="text-gray-500 hover:text-white font-bold uppercase text-[9px] md:text-[10px] tracking-[0.3em] transition-all cursor-pointer">Behance</span>
+            <span className="text-gray-500 hover:text-white font-bold uppercase text-[9px] md:text-[10px] tracking-[0.3em] transition-all cursor-pointer">X (Twitter)</span>
           </div>
           
           <div className="w-full max-w-sm h-px bg-white/5" />
@@ -610,7 +648,7 @@ const App: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setSelectedService(null)}
+            onClick={closeServiceModal}
             className="fixed inset-0 z-[60] flex items-center justify-center p-0 md:p-4 bg-black/98 backdrop-blur-2xl cursor-auto"
           >
             <motion.div
@@ -621,7 +659,7 @@ const App: React.FC = () => {
               className="relative w-full h-full md:h-auto md:max-w-6xl bg-[#080808] md:border md:border-white/10 overflow-y-auto md:overflow-hidden flex flex-col md:flex-row shadow-2xl"
             >
               <button
-                onClick={() => setSelectedService(null)}
+                onClick={closeServiceModal}
                 className="absolute top-6 right-6 z-20 p-4 text-white/50 hover:text-white transition-colors bg-white/5 rounded-full backdrop-blur-md"
               >
                 <X size={20} />
@@ -636,40 +674,98 @@ const App: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-transparent to-transparent" />
               </div>
 
-              <div className="w-full md:w-1/2 p-8 md:p-20 flex flex-col justify-center">
-                <motion.span 
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="text-[#a8fbd3] font-mono text-[9px] md:text-[10px] tracking-[0.5em] uppercase mb-6 block opacity-60"
-                >
-                  {selectedService.category}
-                </motion.span>
-                <motion.h3 
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="text-3xl md:text-6xl font-heading font-bold uppercase leading-tight mb-6 md:mb-8 tracking-tighter"
-                >
-                  {selectedService.name}
-                </motion.h3>
-                <motion.p 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="text-gray-400 leading-relaxed text-sm md:text-xl font-light mb-10 md:mb-12"
-                >
-                  {selectedService.description}
-                </motion.p>
-                <motion.button 
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="w-full md:w-auto bg-[#a8fbd3] text-black hover:bg-white transition-all px-10 py-4 md:px-12 md:py-5 text-[10px] font-bold uppercase tracking-[0.4em] self-start rounded-full shadow-[0_15px_30px_rgba(168,251,211,0.2)] flex items-center justify-center gap-3"
-                >
-                  Synchronize Now <Sparkles size={14} />
-                </motion.button>
+              <div className="w-full md:w-1/2 p-8 md:p-16 flex flex-col">
+                {/* Scrollable Content */}
+                <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
+                  <motion.span 
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="text-[#a8fbd3] font-mono text-[9px] md:text-[10px] tracking-[0.5em] uppercase mb-6 block opacity-60"
+                  >
+                    {selectedService.category}
+                  </motion.span>
+                  <motion.h3 
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="text-3xl md:text-5xl font-heading font-bold uppercase leading-tight mb-6 tracking-tighter"
+                  >
+                    {selectedService.name}
+                  </motion.h3>
+                  <motion.p 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className="text-gray-400 leading-relaxed text-sm md:text-lg font-light mb-10"
+                  >
+                    {selectedService.description}
+                  </motion.p>
+                  
+                  {/* Neural Copywriter Tool */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8 relative overflow-hidden group"
+                  >
+                     <div className="absolute top-0 right-0 p-3 opacity-20">
+                       <Brain size={40} />
+                     </div>
+                     <h4 className="flex items-center gap-2 text-[#a8fbd3] font-mono text-xs uppercase tracking-widest mb-4 font-bold">
+                       <Sparkles size={14} /> Neural Copywriter
+                     </h4>
+                     <p className="text-[10px] text-gray-500 mb-4">
+                       Generate high-converting copy for this service instantly.
+                     </p>
+                     
+                     <div className="flex gap-2 mb-4">
+                       <input 
+                         type="text" 
+                         value={copyTopic}
+                         onChange={(e) => setCopyTopic(e.target.value)}
+                         placeholder="Enter brand name, product, or topic..."
+                         className="flex-1 bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-xs text-white focus:border-[#a8fbd3] outline-none transition-colors"
+                       />
+                       <button 
+                         onClick={handleGenerateCopy}
+                         disabled={isGeneratingCopy || !copyTopic}
+                         className="bg-white text-black px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-[#a8fbd3] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                       >
+                         {isGeneratingCopy ? 'Processing...' : 'Generate'}
+                       </button>
+                     </div>
 
-                <div className="flex justify-between items-center mt-12 md:mt-20 pt-8 border-t border-white/5">
+                     <AnimatePresence>
+                       {generatedCopy && (
+                         <motion.div 
+                           initial={{ height: 0, opacity: 0 }}
+                           animate={{ height: 'auto', opacity: 1 }}
+                           className="bg-black/40 rounded-lg p-4 text-xs text-gray-300 font-mono leading-relaxed border border-white/5 relative group/copy"
+                         >
+                           <button 
+                             onClick={handleCopyToClipboard}
+                             className="absolute top-2 right-2 p-1.5 bg-white/10 hover:bg-white/20 rounded-md transition-colors text-white"
+                             title="Copy to clipboard"
+                           >
+                             {copySuccess ? <Check size={12} className="text-[#a8fbd3]" /> : <Copy size={12} />}
+                           </button>
+                           <div className="whitespace-pre-wrap">{generatedCopy}</div>
+                         </motion.div>
+                       )}
+                     </AnimatePresence>
+                  </motion.div>
+
+                  <motion.button 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.35 }}
+                    className="w-full bg-[#a8fbd3] text-black hover:bg-white transition-all px-10 py-5 text-[10px] font-bold uppercase tracking-[0.4em] rounded-full shadow-[0_15px_30px_rgba(168,251,211,0.2)] flex items-center justify-center gap-3"
+                  >
+                    Synchronize Now <Sparkles size={14} />
+                  </motion.button>
+                </div>
+
+                <div className="flex justify-between items-center mt-6 pt-6 border-t border-white/5 shrink-0">
                    <button onClick={() => navigateService('prev')} className="flex items-center gap-3 text-white/30 hover:text-white transition-colors uppercase text-[9px] font-bold tracking-[0.3em]">
                      <ChevronLeft size={14} /> Prev
                    </button>

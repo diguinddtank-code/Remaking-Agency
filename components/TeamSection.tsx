@@ -55,7 +55,7 @@ const TEAM_DATA: TeamMember[] = [
   },
   {
     id: 'talita',
-    name: 'Talita Kelly',
+    name: 'Talita Spironello',
     role: 'Client Success Lead',
     specialty: 'Strategic Partnerships',
     image: 'https://imgur.com/L2sz8uj.png',

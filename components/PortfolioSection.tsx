@@ -76,7 +76,7 @@ const PROJECTS: Project[] = [
     name: 'AGS CABINETS',
     category: 'HOME IMPROVEMENT',
     year: '2024',
-    url: '#',
+    url: 'https://ags-stones-and-cabinets.vercel.app/',
     desktopImg: 'https://i.imgur.com/Umu0NWn.png',
     mobileImg: 'https://i.imgur.com/Ydnhm0v.png',
     tags: ['Construction', 'Design', 'Catalog']
@@ -86,7 +86,7 @@ const PROJECTS: Project[] = [
     name: 'AGS PAVERS',
     category: 'OUTDOOR LIVING',
     year: '2024',
-    url: '#',
+    url: 'https://ags-stones-and-pavers.vercel.app/',
     desktopImg: 'https://i.imgur.com/YMiPZk1.png',
     mobileImg: 'https://i.imgur.com/PXK6cEq.png',
     tags: ['Construction', 'Landscape', 'Showcase']

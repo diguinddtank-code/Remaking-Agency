@@ -22,6 +22,16 @@ interface Project {
 
 const PROJECTS: Project[] = [
   {
+    id: 'remaking',
+    name: 'REMAKING AGENCY',
+    category: 'MARKETING AGENCY',
+    year: '2025',
+    url: 'https://remaking.agency/',
+    desktopImg: 'https://i.imgur.com/DBgr0yr.png',
+    mobileImg: 'https://i.imgur.com/vz5DC0h.png',
+    tags: ['Agency', 'AI', 'Design']
+  },
+  {
     id: 'bilu',
     name: 'BILU SOCCER',
     category: 'SOCCER ACADEMY',
@@ -42,6 +52,16 @@ const PROJECTS: Project[] = [
     tags: ['Sports', 'Management', 'Design']
   },
   {
+    id: 'star',
+    name: 'STAR CLEANING',
+    category: 'CLEANING SERVICES',
+    year: '2023',
+    url: 'https://starcleaning-ten.vercel.app/',
+    desktopImg: 'https://i.imgur.com/NZGOgev.png',
+    mobileImg: 'https://i.imgur.com/ASRzssV.png',
+    tags: ['Services', 'Local SEO', 'Growth']
+  },
+  {
     id: 'douglas',
     name: 'PSI DOUGLAS',
     category: 'PSYCHOLOGIST',
@@ -52,14 +72,54 @@ const PROJECTS: Project[] = [
     tags: ['Healthcare', 'Therapy', 'Conversion']
   },
   {
-    id: 'star',
-    name: 'STAR CLEANING',
-    category: 'CLEANING SERVICES',
-    year: '2023',
-    url: 'https://starcleaning-ten.vercel.app/',
-    desktopImg: 'https://i.imgur.com/NZGOgev.png',
-    mobileImg: 'https://i.imgur.com/ASRzssV.png',
-    tags: ['Services', 'Local SEO', 'Growth']
+    id: 'ags-cabinets',
+    name: 'AGS CABINETS',
+    category: 'HOME IMPROVEMENT',
+    year: '2024',
+    url: '#',
+    desktopImg: 'https://i.imgur.com/Umu0NWn.png',
+    mobileImg: 'https://i.imgur.com/Ydnhm0v.png',
+    tags: ['Construction', 'Design', 'Catalog']
+  },
+  {
+    id: 'ags-pavers',
+    name: 'AGS PAVERS',
+    category: 'OUTDOOR LIVING',
+    year: '2024',
+    url: '#',
+    desktopImg: 'https://i.imgur.com/YMiPZk1.png',
+    mobileImg: 'https://i.imgur.com/PXK6cEq.png',
+    tags: ['Construction', 'Landscape', 'Showcase']
+  },
+  {
+    id: 'roi-calc',
+    name: 'ROI CALCULATOR',
+    category: 'FINANCIAL TOOL',
+    year: '2024',
+    url: '#',
+    desktopImg: 'https://i.imgur.com/5HEdSln.png',
+    mobileImg: 'https://i.imgur.com/dDBeCS1.png',
+    tags: ['FinTech', 'Calculator', 'Utility']
+  },
+  {
+    id: 'pickleball',
+    name: 'PICKLEBALL BH',
+    category: 'SPORTS CLUB',
+    year: '2024',
+    url: 'https://pickleball-bh.vercel.app/',
+    desktopImg: 'https://i.imgur.com/V1hUffG.png',
+    mobileImg: 'https://i.imgur.com/V1hUffG.png',
+    tags: ['Sports', 'Booking', 'Community']
+  },
+  {
+    id: 'eleve',
+    name: 'CLINICA ELEVE',
+    category: 'DENTAL CLINIC',
+    year: '2024',
+    url: 'https://clinicaeleve.vercel.app/',
+    desktopImg: 'https://i.imgur.com/6aWJoAs.png',
+    mobileImg: 'https://i.imgur.com/6aWJoAs.png',
+    tags: ['Healthcare', 'Dental', 'Local']
   }
 ];
 
@@ -128,7 +188,7 @@ const PortfolioSection: React.FC = () => {
           </div>
           <div className="hidden md:block text-right">
              <p className="text-gray-500 font-mono text-[10px] uppercase tracking-widest leading-relaxed">
-               Index 0{activeIndex + 1} — 0{PROJECTS.length}<br />
+               Index 0{activeIndex + 1} — {PROJECTS.length < 10 ? `0${PROJECTS.length}` : PROJECTS.length}<br />
                Engineering Growth
              </p>
           </div>
@@ -150,7 +210,7 @@ const PortfolioSection: React.FC = () => {
                 >
                   <div className="flex items-baseline gap-4 mb-2 relative overflow-hidden">
                     <span className={`font-mono text-xs transition-colors duration-300 ${activeIndex === index ? 'text-[#a8fbd3]' : 'text-gray-600'}`}>
-                      0{index + 1}
+                      {index < 9 ? `0${index + 1}` : index + 1}
                     </span>
                     {/* Staggered Text Reveal */}
                     <div className="relative">

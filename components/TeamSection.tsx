@@ -66,6 +66,20 @@ const TEAM_DATA: TeamMember[] = [
       { name: 'Problem Solving', level: 98 },
       { name: 'Logistics', level: 90 }
     ]
+  },
+  {
+    id: 'mateus',
+    name: 'Mateus Ferreira',
+    role: 'Strategic Partnerships',
+    specialty: 'Commercial Growth',
+    image: 'https://i.imgur.com/JRDLxsr.jpeg',
+    icon: <Zap className="w-5 h-5" />,
+    description: "Driving expansion through strategic alliances. Expert in identifying high-leverage opportunities and structuring complex deals.",
+    skills: [
+      { name: 'B2B Sales', level: 96 },
+      { name: 'Deal Structuring', level: 94 },
+      { name: 'Networking', level: 98 }
+    ]
   }
 ];
 
@@ -266,7 +280,7 @@ const TeamSection: React.FC = () => {
            </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
           {TEAM_DATA.map((member) => (
             <MemberCard key={member.id} member={member} />
           ))}

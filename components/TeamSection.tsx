@@ -69,7 +69,7 @@ const TEAM_DATA: TeamMember[] = [
   },
   {
     id: 'mateus',
-    name: 'Mateus Ferreira',
+    name: 'Davi Oliveira',
     role: 'Strategic Partnerships',
     specialty: 'Commercial Growth',
     image: 'https://i.imgur.com/JRDLxsr.jpeg',
